@@ -12,7 +12,7 @@ Library/
 /[Uu]ser[Ss]ettings/
 
 # MemoryCaptures can get excessive in size.
-# They also could contain extremely sensitive dataeee
+# They also could contain extremely sensitive data
 /[Mm]emoryCaptures/
 
 # Recordings can get excessive in size
