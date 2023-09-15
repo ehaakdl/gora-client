@@ -1,42 +1,50 @@
 using System;
-public class UdpUtil {
+using System.Net.Sockets;
+using System.Text;
+using System.Net;
+public class UdpUtil
+{
 
-    public void receive(){
-    try{
-        
-        string ip = Environment.GetEnvironmentVariable("SERVER_IP")
-        string port = Environment.GetEnvironmentVariable("SERVER_PORT")
-         udpClient.Connect(ip, port);
+    public void receive()
+    {
+        try
+        {
 
-         // Sends a message to the host to which you have connected.
-         Byte[] sendBytes = Encoding.ASCII.GetBytes("Is anybody there?");
+            string ip = Environment.GetEnvironmentVariable("SERVER_UDP_IP");
+            int port = Int32.Parse(Environment.GetEnvironmentVariable("SERVER_UDP_PORT"));
+            UdpClient udpClient = new UdpClient(port);
+            udpClient.Connect(ip, port);
 
-         udpClient.Send(sendBytes, sendBytes.Length);
+            // Sends a message to the host to which you have connected.
+            Byte[] sendBytes = Encoding.ASCII.GetBytes("Is anybody there?");
 
-         // Sends a message to a different host using optional hostname and port parameters.
-         UdpClient udpClientB = new UdpClient();
-         udpClientB.Send(sendBytes, sendBytes.Length, "AlternateHostMachineName", 11000);
+            udpClient.Send(sendBytes, sendBytes.Length);
 
-         //IPEndPoint object will allow us to read datagrams sent from any source.
-         IPEndPoint RemoteIpEndPoint = new IPEndPoint(IPAddress.Any, 0);
+            // Sends a message to a different host using optional hostname and port parameters.
+            UdpClient udpClientB = new UdpClient();
+            udpClientB.Send(sendBytes, sendBytes.Length, "AlternateHostMachineName", 11000);
 
-         // Blocks until a message returns on this socket from a remote host.
-         Byte[] receiveBytes = udpClient.Receive(ref RemoteIpEndPoint);
-         string returnData = Encoding.ASCII.GetString(receiveBytes);
+            //IPEndPoint object will allow us to read datagrams sent from any source.
+            IPEndPoint RemoteIpEndPoint = new IPEndPoint(IPAddress.Any, 0);
 
-         // Uses the IPEndPoint object to determine which of these two hosts responded.
-         Console.WriteLine("This is the message you received " +
-                                      returnData.ToString());
-         Console.WriteLine("This message was sent from " +
-                                     RemoteIpEndPoint.Address.ToString() +
-                                     " on their port number " +
-                                     RemoteIpEndPoint.Port.ToString());
+            // Blocks until a message returns on this socket from a remote host.
+            Byte[] receiveBytes = udpClient.Receive(ref RemoteIpEndPoint);
+            string returnData = Encoding.ASCII.GetString(receiveBytes);
 
-          udpClient.Close();
-          udpClientB.Close();
-          }
-       catch (Exception e ) {
-                  Console.WriteLine(e.ToString());
+            // Uses the IPEndPoint object to determine which of these two hosts responded.
+            Console.WriteLine("This is the message you received " +
+                                         returnData.ToString());
+            Console.WriteLine("This message was sent from " +
+                                        RemoteIpEndPoint.Address.ToString() +
+                                        " on their port number " +
+                                        RemoteIpEndPoint.Port.ToString());
+
+            udpClient.Close();
+            udpClientB.Close();
+        }
+        catch (Exception e)
+        {
+            Console.WriteLine(e.ToString());
         }
     }
 }
