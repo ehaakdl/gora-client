@@ -9,8 +9,6 @@ namespace network
 {
     public class Client : SingleTonMonobehaviour<Client>
     {
-        //local IP
-        public string serverIp = "127.0.0.1";
         Socket clientSocket = null;
 
         // Start is called before the first frame update
@@ -19,12 +17,10 @@ namespace network
             //클라이언트에서 사용할 소켓 준비
             this.clientSocket = new Socket(AddressFamily.InterNetwork, SocketType.Stream, ProtocolType.Tcp);
 
-            //클라이언트는 바인딩할 필요 없음
-
             //접속할 서버의 통신지점(목적지)
             string ip = Environment.GetEnvironmentVariable("SERVER_TCP_IP");
-            IPAddress serverIPAdress = IPAddress.Parse(this.serverIp);
-            int port = Int32.Parse(Environment.GetEnvironmentVariable("SERVER_UDP_PORT"));
+            IPAddress serverIPAdress = IPAddress.Parse(ip);
+            int port = Int32.Parse(Environment.GetEnvironmentVariable("SERVER_TCP_PORT"));
             IPEndPoint serverEndPoint = new IPEndPoint(serverIPAdress, port);
 
             //서버로 연결 요청
