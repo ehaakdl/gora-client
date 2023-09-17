@@ -10,9 +10,13 @@ public class NetworkPacket       //모노비헤이비어는 싱글톤으로 만�
 {
     private int type;
     
-    private Object data;
+    private object data;
+    private string key;
     
-
+    public NetworkPacket(int type, object data){
+        this.type = type;
+        this.data = data;
+    }
     //쏘는거
     public static byte[] convertToByteArray(NetworkPacket packet)
     {
@@ -38,12 +42,13 @@ public class NetworkPacket       //모노비헤이비어는 싱글톤으로 만�
         //바이너리 포매터로 스트림에 떠내려온 데이터를 건져낸다.
         BinaryFormatter formatter = new BinaryFormatter();
         //패킷을 생성해서      //패킷 생성기에 대해 알아보기!
-        NetworkPacket packet = new NetworkPacket();
-        //생성한 패킷에 디이터를 디시리얼 라이즈해서 담는다.
-        packet.type = formatter.Deserialize(stream);
-        packet.data = formatter.Deserialize(stream);
+        NetworkPacket packet = new NetworkPacket((int)formatter.Deserialize(stream), formatter.Deserialize(stream));
 
         return packet;
+    }
+
+    public object getData(){
+        return this.data;
     }
 
 }
