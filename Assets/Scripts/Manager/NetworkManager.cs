@@ -141,8 +141,6 @@ public class NetworkManager
                 data = "data",
                 type = 1
             };
-            
-            send(new NetworkInfo(1, packet));
         }
         catch (SocketException e)
         {
