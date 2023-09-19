@@ -4,7 +4,7 @@ using System;
 using System.Net;
 using UnityEngine;
 
-public class NetworkManager : MonoBehaviour
+public class NetworkManager
 {
     private static Socket clientTcpSocket = null;
     private static NetworkManager _instance = null;
@@ -13,32 +13,13 @@ public class NetworkManager : MonoBehaviour
         get
         {
             // 인스턴스가 없는 경우에 접근하려 하면 인스턴스를 할당해준다.
-            if (!_instance)
+            if (_instance == null)
             {
-                _instance = FindObjectOfType(typeof(NetworkManager)) as NetworkManager;
-                _instance.connectTcp();
-
-                if (_instance == null)
-                    Debug.Log("no Singleton obj");
+                _instance = new NetworkManager();
             }
 
             return _instance;
         }
-    }
-
-    private void Awake()
-    {
-        if (_instance == null)
-        {
-            _instance = this;
-        }
-        // 인스턴스가 존재하는 경우 새로생기는 인스턴스를 삭제한다.
-        else if (_instance != this)
-        {
-            Destroy(gameObject);
-        }
-        // 아래의 함수를 사용하여 씬이 전환되더라도 선언되었던 인스턴스가 파괴되지 않는다.
-        DontDestroyOnLoad(gameObject);
     }
 
     // 어떤 곳에서도 비동기 호출 가능 해야한다.
@@ -139,13 +120,14 @@ public class NetworkManager : MonoBehaviour
     }
     public void connectTcp()
     {
-        //클라이언트에서 사용할 소켓 준비
         clientTcpSocket = new Socket(AddressFamily.InterNetwork, SocketType.Stream, ProtocolType.Tcp);
+        //환경변수 왜안되느지 확인
+        //string ip = Environment.GetEnvironmentVariable("SERVER_TCP_IP");
 
-        //접속할 서버의 통신지점(목적지)
-        string ip = Environment.GetEnvironmentVariable("SERVER_TCP_IP");
+        string ip = "127.0.0.1";
         IPAddress serverIPAdress = IPAddress.Parse(ip);
-        int port = Int32.Parse(Environment.GetEnvironmentVariable("SERVER_TCP_PORT"));
+        //int port = Int32.Parse(Environment.GetEnvironmentVariable("SERVER_TCP_PORT"));
+        int port = 11200;
         IPEndPoint serverEndPoint = new IPEndPoint(serverIPAdress, port);
 
         //서버로 연결 요청
@@ -153,6 +135,7 @@ public class NetworkManager : MonoBehaviour
         {
             Debug.Log("Connecting to Server");
             clientTcpSocket.Connect(serverEndPoint);
+            send(new NetworkInfo(1, new NetworkPacket(1,"11", "1234")));
         }
         catch (SocketException e)
         {
