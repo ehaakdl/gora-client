@@ -25,7 +25,7 @@ public class PlayerController : MonoBehaviour
         {
             moveDirection = new Vector3(0f, verticalInput, 0f);
         }
-
+        
         transform.Translate(moveDirection * speed * Time.deltaTime);
     }
 }
