@@ -135,7 +135,12 @@ public class NetworkManager
         {
             Debug.Log("Connecting to Server");
             clientTcpSocket.Connect(serverEndPoint);
-            send(new NetworkInfo(1, new NetworkPacket(1,"11", "1234")));
+            var packet = new NetworkPacket {
+                data = "data",
+                type = 1
+            };
+            
+            send(new NetworkInfo(1, packet));
         }
         catch (SocketException e)
         {

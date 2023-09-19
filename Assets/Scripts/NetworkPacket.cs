@@ -2,19 +2,13 @@ using System;
 using Newtonsoft.Json;
 using System.Text;
 
-[Serializable]  
-public class NetworkPacket      
+[Serializable]
+public class NetworkPacket
 {
-    private int type;
-    
-    private string data;
-    private string key;
-    
-    public NetworkPacket(int type, string key, string data){
-        this.type = type;
-        this.key = key;
-        this.data = data;
-    }
+    public int type{ get; set; }
+    public object data { get; set; }
+    public string key { get; set; }
+
 
     public static byte[] convertToByteArray(NetworkPacket packet)
     {
@@ -27,9 +21,4 @@ public class NetworkPacket
         string json = Encoding.UTF8.GetString(bytes);
         return JsonConvert.DeserializeObject<NetworkPacket>(json);
     }
-
-    public object getData(){
-        return this.data;
-    }
-
 }
