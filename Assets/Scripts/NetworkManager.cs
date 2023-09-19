@@ -135,7 +135,9 @@ public class NetworkManager
         {
             Debug.Log("Connecting to Server");
             clientTcpSocket.Connect(serverEndPoint);
-            var packet = new NetworkPacket {
+
+            // send 패킷 이벤트 발생 시 호출하기, 이건 임시로 추가해둠 제,
+            NetworkPacket packet = new NetworkPacket {
                 data = "data",
                 type = 1
             };
