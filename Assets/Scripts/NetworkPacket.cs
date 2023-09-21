@@ -8,11 +8,11 @@ public class NetworkPacket
     public int type{ get; set; }
     public object data { get; set; }
     public string key { get; set; }
-
+    public static string EOF = "@@@";
 
     public static byte[] convertToByteArray(NetworkPacket packet)
     {
-        string packetToJson = JsonConvert.SerializeObject(packet);
+        string packetToJson = JsonConvert.SerializeObject(packet) + EOF;
         return Encoding.UTF8.GetBytes(packetToJson);
     }
 
