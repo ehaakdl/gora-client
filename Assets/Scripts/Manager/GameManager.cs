@@ -21,7 +21,7 @@ public class GameManager : MonoBehaviour
             type = (int)ServiceType.test
         };
 
-        NetworkManager.Instance.send(new NetworkInfo(NetworkProtocolType.tcp, packet));
+        NetworkManager.Instance.send(new NetworkInfo(NetworkProtocolType.udp, packet));
     }
 
     public static GameManager Instance
@@ -62,6 +62,7 @@ public class GameManager : MonoBehaviour
     void Start()
     {
         NetworkManager.Instance.ConnectTcp();
+        NetworkManager.Instance.ConnectUdp();
     }
 
     // Update is called once per frame

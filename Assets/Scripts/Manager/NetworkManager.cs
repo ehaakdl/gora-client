@@ -7,6 +7,8 @@ using UnityEngine;
 public class NetworkManager
 {
     private static Socket clientTcpSocket = null;
+    private UdpClient clientUdp = null;
+    private UdpClient serverUdp = null;
     private static NetworkManager _instance = null;
     public static NetworkManager Instance
     {
@@ -27,6 +29,7 @@ public class NetworkManager
     // TCP, UDP 지원
     public void send(NetworkInfo networkInfo)
     {
+        
         if ((int)networkInfo.protocol == (int)NetworkProtocolType.tcp)
         {
             SocketAsyncEventArgs socketAsyncEventArgs = new SocketAsyncEventArgs();
@@ -37,9 +40,9 @@ public class NetworkManager
         }
         else
         {
-            // udp
+            byte[] sendPacket = NetworkPacket.convertToByteArray(networkInfo.packet);
+            this.serverUdp.SendAsync(sendPacket, sendPacket.Length);
         }
-
     }
     private void sendTcpProcess(SocketAsyncEventArgs socketAsyncEventArgs)
     {
@@ -118,6 +121,22 @@ public class NetworkManager
             clientTcpSocket.Close();
         }
     }
+
+    public void ConnectUdp()
+    {
+        // 클라이언트 수신용 소켓
+        int listenPort = 11112;
+        this.clientUdp = new UdpClient(listenPort);
+
+        //서버 송신용 소켓
+        this.serverUdp = new UdpClient();
+        //string ip = Environment.GetEnvironmentVariable("SERVER_UDP_IP");
+        string ip = "127.0.0.1";
+        //int port = Int32.Parse(Environment.GetEnvironmentVariable("SERVER_UDP_PORT"));
+        int serverPort = 11111;
+        serverUdp.Connect(ip, serverPort);
+    }
+
     public void ConnectTcp()
     {
         clientTcpSocket = new Socket(AddressFamily.InterNetwork, SocketType.Stream, ProtocolType.Tcp);

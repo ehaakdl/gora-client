@@ -10,25 +10,29 @@ public class UdpUtil
         try
         {
 
-            string ip = Environment.GetEnvironmentVariable("SERVER_UDP_IP");
-            int port = Int32.Parse(Environment.GetEnvironmentVariable("SERVER_UDP_PORT"));
-            UdpClient udpClient = new UdpClient(port);
-            udpClient.Connect(ip, port);
+            //string ip = Environment.GetEnvironmentVariable("SERVER_UDP_IP");
+            string ip = "127.0.0.1";
+            //int port = Int32.Parse(Environment.GetEnvironmentVariable("SERVER_UDP_PORT"));
+            int serverPort = 11111;
+            UdpClient server= new UdpClient(serverPort);
+            server.Connect(ip, serverPort);
 
             // Sends a message to the host to which you have connected.
             Byte[] sendBytes = Encoding.ASCII.GetBytes("Is anybody there?");
 
-            udpClient.Send(sendBytes, sendBytes.Length);
+            server.Send(sendBytes, sendBytes.Length);
 
             // Sends a message to a different host using optional hostname and port parameters.
-            UdpClient udpClientB = new UdpClient();
-            udpClientB.Send(sendBytes, sendBytes.Length, "AlternateHostMachineName", 11000);
+            
+            UdpClient client= new UdpClient(listenPort);
+            
+            client.Send(sendBytes, sendBytes.Length, "AlternateHostMachineName", listenPort);
 
             //IPEndPoint object will allow us to read datagrams sent from any source.
             IPEndPoint RemoteIpEndPoint = new IPEndPoint(IPAddress.Any, 0);
 
             // Blocks until a message returns on this socket from a remote host.
-            Byte[] receiveBytes = udpClient.Receive(ref RemoteIpEndPoint);
+            Byte[] receiveBytes = server.Receive(ref RemoteIpEndPoint);
             string returnData = Encoding.ASCII.GetString(receiveBytes);
 
             // Uses the IPEndPoint object to determine which of these two hosts responded.
@@ -39,7 +43,7 @@ public class UdpUtil
                                         " on their port number " +
                                         RemoteIpEndPoint.Port.ToString());
 
-            udpClient.Close();
+            server.Close();
             udpClientB.Close();
         }
         catch (Exception e)
