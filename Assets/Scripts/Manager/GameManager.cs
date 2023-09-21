@@ -61,7 +61,7 @@ public class GameManager : MonoBehaviour
     // Start is called before the first frame update
     void Start()
     {
-        NetworkManager.Instance.connectTcp();
+        NetworkManager.Instance.ConnectTcp();
     }
 
     // Update is called once per frame

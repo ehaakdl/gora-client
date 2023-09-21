@@ -118,7 +118,7 @@ public class NetworkManager
             clientTcpSocket.Close();
         }
     }
-    public void connectTcp()
+    public void ConnectTcp()
     {
         clientTcpSocket = new Socket(AddressFamily.InterNetwork, SocketType.Stream, ProtocolType.Tcp);
         //환경변수 왜안되느지 확인
