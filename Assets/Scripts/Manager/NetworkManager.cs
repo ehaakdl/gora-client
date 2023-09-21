@@ -27,11 +27,11 @@ public class NetworkManager
     // TCP, UDP 지원
     public void send(NetworkInfo networkInfo)
     {
-        if (networkInfo.getProtocol() == 1)
+        if ((int)networkInfo.protocol == (int)NetworkProtocolType.tcp)
         {
             SocketAsyncEventArgs socketAsyncEventArgs = new SocketAsyncEventArgs();
             socketAsyncEventArgs.Completed += new EventHandler<SocketAsyncEventArgs>(tcpIoCompleted);
-            byte[] sendPacket = NetworkPacket.convertToByteArray(networkInfo.getPacket());
+            byte[] sendPacket = NetworkPacket.convertToByteArray(networkInfo.packet);
             socketAsyncEventArgs.SetBuffer(sendPacket, 0, sendPacket.Length);
             clientTcpSocket.SendAsync(socketAsyncEventArgs);
         }

@@ -1,5 +1,3 @@
-using System.Collections;
-using System.Collections.Generic;
 using UnityEngine;
 
 public class SingleTonMonobehaviour<T> : MonoBehaviour where T : MonoBehaviour
