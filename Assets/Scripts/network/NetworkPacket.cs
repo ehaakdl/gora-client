@@ -8,6 +8,7 @@ public class NetworkPacket
     public int type{ get; set; }
     public object data { get; set; }
     public string key { get; set; }
+    //데이터 마지막을 구분짓는다
     public static string EOF = "@@@";
 
     public static byte[] convertToByteArray(NetworkPacket packet)

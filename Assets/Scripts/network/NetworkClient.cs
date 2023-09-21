@@ -8,13 +8,12 @@ using System.Net.Sockets;
 
 public class Client : SingleTonMonobehaviour<Client>
 {
-    Socket clientSocket = null;
+    private Socket socket = null;
 
-    // Start is called before the first frame update
-    void Start()
+    private void connect()
     {
         //클라이언트에서 사용할 소켓 준비
-        this.clientSocket = new Socket(AddressFamily.InterNetwork, SocketType.Stream, ProtocolType.Tcp);
+        this.socket = new Socket(AddressFamily.InterNetwork, SocketType.Stream, ProtocolType.Tcp);
 
         //접속할 서버의 통신지점(목적지)
         string ip = Environment.GetEnvironmentVariable("SERVER_TCP_IP");
@@ -26,7 +25,7 @@ public class Client : SingleTonMonobehaviour<Client>
         try
         {
             Debug.Log("Connecting to Server");
-            this.clientSocket.Connect(serverEndPoint);
+            this.socket.Connect(serverEndPoint);
         }
         catch (SocketException e)
         {
@@ -34,29 +33,32 @@ public class Client : SingleTonMonobehaviour<Client>
         }
     }
 
+    // Start is called before the first frame update
+    void Start()
+    {
+        connect();
+    }
+
     private void OnApplicationQuit()
     {
-        if (this.clientSocket != null)
+        if (this.socket != null)
         {
-            this.clientSocket.Close();
-            this.clientSocket = null;
+            this.socket.Close();
+            this.socket = null;
         }
     }
 
     public static void Send(NetworkPacket packet)
     {
-        if (Client.Instance.clientSocket == null)
+        if (Client.Instance.socket == null)
         {
             return;
         }
         byte[] sendData = NetworkPacket.convertToByteArray(packet);
         byte[] prefSize = new byte[1];
         prefSize[0] = (byte)sendData.Length;    //버퍼의 가장 앞부분에 이 버퍼의 길이에 대한 정보가 있는데 이것을 
-        Client.Instance.clientSocket.Send(prefSize);    //먼저 보낸다.
-        Client.Instance.clientSocket.Send(sendData);
-
-
-
+        Client.Instance.socket.Send(prefSize);    //먼저 보낸다.
+        Client.Instance.socket.Send(sendData);
     }
 
     // Update is called once per frame

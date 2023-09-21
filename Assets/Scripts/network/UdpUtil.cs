@@ -5,7 +5,7 @@ using System.Net;
 public class UdpUtil
 {
 
-    public void receive()
+    public void Recv()
     {
         try
         {
