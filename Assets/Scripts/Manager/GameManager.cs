@@ -1,28 +1,15 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using System.Threading;
 
 public class GameManager : MonoBehaviour
 {
     private static GameManager instance = null;
-    private GameObject player;
+    private Thread networkDispatcherThread;
+    private GameObject player = null;
 
-    private void SendPlayerCoordinate()
-    {
-        PlayerCoordinate playerCoordinate = new PlayerCoordinate
-        {
-
-            x = player.transform.position.x,
-            y = player.transform.position.y
-        };
-        NetworkPacket packet = new NetworkPacket
-        {
-            data = playerCoordinate,
-            type = (int)ServiceType.test
-        };
-
-        NetworkManager.Instance.send(new NetworkInfo(NetworkProtocolType.udp, packet));
-    }
+    
 
     public static GameManager Instance
     {
@@ -55,19 +42,40 @@ public class GameManager : MonoBehaviour
             //그래서 이미 전역변수인 instance에 인스턴스가 존재한다면 자신(새로운 씬의 GameMgr)을 삭제해준다.
             Destroy(this.gameObject);
         }
-        this.player = GameObject.Find("Player");
-    }
 
+    }
+    
     // Start is called before the first frame update
     void Start()
     {
         NetworkManager.Instance.ConnectTcp();
         NetworkManager.Instance.ConnectUdp();
+
+        this.player = GameObject.Find("Player");
+
+        networkDispatcherThread = new Thread(NetworkDispatcher.Run);
+        networkDispatcherThread.Start();
+    }
+    
+    private void setPlayerCoordinate()
+    {
+        PlayerCoordinate coordinate = new PlayerCoordinate
+        {
+            x = player.transform.position.x,
+            y = player.transform.position.y
+        };
+        NetworkPacket packet = new NetworkPacket
+        {
+            data = coordinate,
+            type = (int)ServiceType.test
+        };
+
+        NetworkDispatcher.playerCoordinatePacket = packet;
     }
 
     // Update is called once per frame
     void Update()
     {
-        SendPlayerCoordinate();
+        setPlayerCoordinate();
     }
 }
