@@ -2,7 +2,7 @@
 
 public class NetworkDispatcher
 {
-    public static NetworkPacket playerCoordinatePacket { get; set; }
+    public static NetworkPacket playerCoordinatePacket{ get; set; }
     private static NetworkDispatcher _instance = null;
 
     public static NetworkDispatcher Instance
@@ -23,6 +23,10 @@ public class NetworkDispatcher
     {
         while (true)
         {
+            if(playerCoordinatePacket == null)
+            {
+                continue;
+            }
             NetworkManager.Instance.send(new NetworkInfo(NetworkProtocolType.udp, playerCoordinatePacket));
             Thread.Sleep(200);
         }
