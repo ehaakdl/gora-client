@@ -8,8 +8,9 @@ public class GameManager : MonoBehaviour
     private static GameManager instance = null;
     private Thread networkDispatcherThread;
     private GameObject player = null;
-
-    
+    private Thread networkTcpRecvThread;
+    private Thread networkudpRecvThread;
+    public static bool isQuit = false;
 
     public static GameManager Instance
     {
@@ -53,8 +54,14 @@ public class GameManager : MonoBehaviour
 
         this.player = GameObject.Find("Player");
 
-        networkDispatcherThread = new Thread(NetworkDispatcher.Run);
+        networkDispatcherThread = new Thread(NetworkDispatcher.Dispatcher);
         networkDispatcherThread.Start();
+
+        networkTcpRecvThread = new Thread(NetworkManager.Instance.RecvTcp);
+        networkTcpRecvThread.Start();
+
+        networkudpRecvThread = new Thread(NetworkManager.Instance.RecvUdp);
+        networkudpRecvThread.Start();
     }
     
     private void setPlayerCoordinate()
@@ -71,6 +78,11 @@ public class GameManager : MonoBehaviour
         };
 
         NetworkDispatcher.playerCoordinatePacket = packet;
+    }
+
+    void OnApplicationQuit()
+    {
+        isQuit = true;
     }
 
     // Update is called once per frame

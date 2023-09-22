@@ -19,9 +19,9 @@ public class NetworkDispatcher
         }
     }
 
-    public static void Run()
+    public static void Dispatcher()
     {
-        while (true)
+        while (!GameManager.isQuit)
         {
             if(playerCoordinatePacket == null)
             {
