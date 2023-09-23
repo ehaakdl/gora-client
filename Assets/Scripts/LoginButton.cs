@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using UnityEngine.UI;
 using UnityEngine.EventSystems;
 using UnityEngine;
+using UnityEditor.PackageManager.Requests;
 
 public class LoginButton : MonoBehaviour
 {
@@ -14,7 +15,14 @@ public class LoginButton : MonoBehaviour
     void Awake()
     {
         UserApi userApi = new UserApi();
-        loginButton.onClick.AddListener(userApi.login);
+        LoginRequest data = new LoginRequest
+        {
+            email = "ehaakdl@gmail.com",
+            password = "1234"
+        };
+        loginButton.onClick.AddListener(async () => {
+            await userApi.login(data);
+        });
     }
     void Start()
     {
