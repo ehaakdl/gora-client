@@ -29,11 +29,6 @@ public class LoginManager : MonoBehaviour
         userApi = new UserApi();
         loginButton.onClick.AddListener(onClick);
 
-        /*GameObject emailGameObj = GameObject.Find("Email");
-        GameObject passwordGameObj = GameObject.Find("Password");
-        emailField = emailGameObj.GetComponent<InputField>();
-        passwordField = passwordGameObj.GetComponent<InputField>();
-*/
         system = EventSystem.current;
         firstInputField.Select();
         
@@ -62,8 +57,6 @@ public class LoginManager : MonoBehaviour
         }
         else if (Input.GetKeyDown(KeyCode.Return))
         {
-            // 엔터키를 치면 로그인 (제출) 버튼을 클릭
-            
             loginButton.onClick.Invoke();
             
         }
