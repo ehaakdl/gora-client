@@ -15,13 +15,12 @@ public class UserApi
     private string apiUrl = "http://localhost:8080";
     private static readonly HttpClient httpClient = new HttpClient();
 
-    public async Task<string> login(LoginRequest login)
+    public async Task<string> login(LoginRequest loginRequest)
     {
-        Debug.Log(login);
         string url = apiUrl + "/api/v1/login";
 
         // JSON 문자열로 직렬화합니다.
-        string json = JsonConvert.SerializeObject(login);
+        string json = JsonConvert.SerializeObject(loginRequest);
 
         // POST 요청을 생성하고 데이터를 첨부합니다.
 
@@ -32,19 +31,5 @@ public class UserApi
 
         // 응답을 문자열로 읽습니다.
         return await response.Content.ReadAsStringAsync();
-    }
-
-    private IEnumerator SendRequest(UnityWebRequest request)
-    {
-        yield return request.SendWebRequest();
-
-        if (request.result == UnityWebRequest.Result.ConnectionError || request.result == UnityWebRequest.Result.ProtocolError)
-        {
-            Debug.LogError(request.error);
-        }
-        else
-        {
-            Debug.Log("Response: " + request.downloadHandler.text);
-        }
     }
 }

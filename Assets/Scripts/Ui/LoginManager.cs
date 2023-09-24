@@ -1,35 +1,41 @@
-using System.Collections;
-using System.Collections.Generic;
 using UnityEngine.UI;
 using UnityEngine.EventSystems;
 using UnityEngine;
-using UnityEditor.PackageManager.Requests;
+using TMPro;
+using BCrypt.Net;
 
-public class LoginButton : MonoBehaviour
+public class LoginManager : MonoBehaviour
 {
     EventSystem system;
     public Button loginButton;
-    public Selectable firstInput;
+    public Selectable firstInputField;
+    public TMP_InputField emailField;
+    public TMP_InputField passwordField;
     private UserApi userApi;
-
-    void Awake()
+    public async void onClick()
     {
-        UserApi userApi = new UserApi();
-        LoginRequest data = new LoginRequest
-        {
-            email = "ehaakdl@gmail.com",
-            password = "1234"
+        LoginRequest loginReq = new LoginRequest 
+        { 
+            email = emailField.text,
+            password = passwordField.text
         };
-        loginButton.onClick.AddListener(async () => {
-            await userApi.login(data);
-        });
+        Debug.Log(loginReq.email);
+        Debug.Log(loginReq.password);
+        string dd = await userApi.login(loginReq);
+        Debug.Log(dd);
     }
     void Start()
     {
-        
+        userApi = new UserApi();
+        loginButton.onClick.AddListener(onClick);
+
+        /*GameObject emailGameObj = GameObject.Find("Email");
+        GameObject passwordGameObj = GameObject.Find("Password");
+        emailField = emailGameObj.GetComponent<InputField>();
+        passwordField = passwordGameObj.GetComponent<InputField>();
+*/
         system = EventSystem.current;
-        // 처음은 이메일 Input Field를 선택하도록 한다.
-        firstInput.Select();
+        firstInputField.Select();
         
     }
 
