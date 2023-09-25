@@ -2,7 +2,7 @@ using UnityEngine.UI;
 using UnityEngine.EventSystems;
 using UnityEngine;
 using TMPro;
-using BCrypt.Net;
+
 
 public class LoginManager : MonoBehaviour
 {
