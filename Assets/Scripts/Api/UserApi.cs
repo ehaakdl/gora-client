@@ -10,7 +10,7 @@ public class UserApi
     private string apiUrl = "http://localhost:8080";
     private static readonly HttpClient httpClient = new HttpClient();
 
-    public async Task<string> login(LoginRequest loginRequest)
+    public async Task<HttpResponseMessage> login(LoginRequest loginRequest)
     {
         string url = apiUrl + "/api/v1/login";
 
@@ -25,6 +25,6 @@ public class UserApi
         HttpResponseMessage response = await httpClient.PostAsync(url, content);
 
         // 응답을 문자열로 읽습니다.
-        return await response.Content.ReadAsStringAsync();
+        return response;
     }
 }

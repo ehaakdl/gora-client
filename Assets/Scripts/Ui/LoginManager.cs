@@ -2,7 +2,9 @@ using UnityEngine.UI;
 using UnityEngine.EventSystems;
 using UnityEngine;
 using TMPro;
-
+using System.Net.Http;
+using System.Net;
+using Newtonsoft.Json;
 
 public class LoginManager : MonoBehaviour
 {
@@ -21,8 +23,18 @@ public class LoginManager : MonoBehaviour
         };
         Debug.Log(loginReq.email);
         Debug.Log(loginReq.password);
-        string dd = await userApi.login(loginReq);
-        Debug.Log(dd);
+        HttpResponseMessage response = await userApi.login(loginReq);
+        string responseJson = await response.Content.ReadAsStringAsync();
+        if (response.StatusCode == HttpStatusCode.OK)
+        {
+            CommonResponse commonResponse = JsonConvert.DeserializeObject<CommonResponse>(responseJson);   
+        }
+        else
+        {
+            CommonResponse commonResponse = JsonConvert.DeserializeObject<CommonResponse>(responseJson);
+            Debug.Log(commonResponse.message);
+        }
+        
     }
     void Start()
     {
