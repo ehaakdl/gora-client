@@ -12,21 +12,15 @@ public class NetworkManager
     private static Socket clientTcpSocket = null;
     private UdpClient listenUdp = null;
     private UdpClient connectUdp = null;
-    private static NetworkManager _instance = null;
     private static int RECV_BUF_SIZE = 1024;
     private static StringBuilder tcpRecvAssemble = new StringBuilder();
     private static StringBuilder udpRecvAssemble = new StringBuilder();
+    private static readonly Lazy<NetworkManager> instance = new Lazy<NetworkManager>(() => new NetworkManager());
     public static NetworkManager Instance
     {
         get
         {
-            // 인스턴스가 없는 경우에 접근하려 하면 인스턴스를 할당해준다.
-            if (_instance == null)
-            {
-                _instance = new NetworkManager();
-            }
-
-            return _instance;
+            return instance.Value;
         }
     }
 
@@ -35,8 +29,8 @@ public class NetworkManager
     // TCP, UDP 지원
     public void send(NetworkInfo networkInfo)
     {
-        
-        if ((int)networkInfo.protocol == (int)NetworkProtocolType.tcp)
+        int protocol = (int)networkInfo.protocol;
+        if (protocol == (int)NetworkProtocolType.tcp)
         {
             SocketAsyncEventArgs socketAsyncEventArgs = new SocketAsyncEventArgs();
             socketAsyncEventArgs.Completed += new EventHandler<SocketAsyncEventArgs>(tcpIoCompleted);
@@ -82,7 +76,7 @@ public class NetworkManager
             NetworkPacket packet = JsonConvert.DeserializeObject<NetworkPacket>(jsonUnit);
 
             // recv object model routing 
-            if ((int)packet.type == (int)ServiceType.test)
+            if ((int)packet.type == (int)ServiceType.player_coordinate)
             {
                 if (packet.data is not JObject)
                 {
@@ -119,7 +113,7 @@ public class NetworkManager
             NetworkPacket packet = JsonConvert.DeserializeObject<NetworkPacket>(jsonUnit);
 
             // recv object model routing 
-            if ((int)packet.type == (int)ServiceType.test)
+            if ((int)packet.type == (int)ServiceType.player_coordinate)
             {
                 if (packet.data is not JObject)
                 {

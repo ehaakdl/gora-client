@@ -5,6 +5,7 @@ using TMPro;
 using System.Net.Http;
 using System.Net;
 using Newtonsoft.Json;
+using UnityEngine.SceneManagement;
 
 public class LoginManager : MonoBehaviour
 {
@@ -14,6 +15,7 @@ public class LoginManager : MonoBehaviour
     public TMP_InputField emailField;
     public TMP_InputField passwordField;
     private UserApi userApi;
+
     public async void onClick()
     {
         LoginRequest loginReq = new LoginRequest 
@@ -21,18 +23,18 @@ public class LoginManager : MonoBehaviour
             email = emailField.text,
             password = passwordField.text
         };
-        Debug.Log(loginReq.email);
-        Debug.Log(loginReq.password);
         HttpResponseMessage response = await userApi.login(loginReq);
+
         string responseJson = await response.Content.ReadAsStringAsync();
         if (response.StatusCode == HttpStatusCode.OK)
         {
-            CommonResponse commonResponse = JsonConvert.DeserializeObject<CommonResponse>(responseJson);   
+            CommonResponse commonResponse = JsonConvert.DeserializeObject<CommonResponse>(responseJson);
+            UserAuthRepository.Instance.accessToken = (string)commonResponse.data;
+            SceneManager.LoadScene("MainScene");
         }
         else
         {
-            CommonResponse commonResponse = JsonConvert.DeserializeObject<CommonResponse>(responseJson);
-            Debug.Log(commonResponse.message);
+            Debug.Log("login fail");
         }
         
     }

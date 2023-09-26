@@ -1,5 +1,3 @@
-using System.Collections;
-using System.Collections.Generic;
 using UnityEngine;
 using System.Threading;
 
@@ -11,6 +9,7 @@ public class GameManager : MonoBehaviour
     private Thread networkTcpRecvThread;
     private Thread networkudpRecvThread;
     public static bool isQuit = false;
+    private UserAuthRepository userAuthRepository;
 
     public static GameManager Instance
     {
@@ -66,15 +65,23 @@ public class GameManager : MonoBehaviour
     
     private void setPlayerCoordinate()
     {
+        if (UserAuthRepository.Instance.accessToken == null)
+        {
+            Debug.Log("please Login");
+            return;
+        }
+
         PlayerCoordinate coordinate = new PlayerCoordinate
         {
             x = player.transform.position.x,
             y = player.transform.position.y
         };
+
         NetworkPacket packet = new NetworkPacket
         {
             data = coordinate,
-            type = (int)ServiceType.test
+            type = (int)ServiceType.player_coordinate,
+            key = UserAuthRepository.Instance.accessToken
         };
 
         NetworkDispatcher.playerCoordinatePacket = packet;

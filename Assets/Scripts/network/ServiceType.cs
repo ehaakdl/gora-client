@@ -1,5 +1,5 @@
 ﻿using System;
 public enum ServiceType
 {
-    test = 1
+    player_coordinate = 1
 }
