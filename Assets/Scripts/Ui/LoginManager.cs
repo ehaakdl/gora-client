@@ -21,7 +21,8 @@ public class LoginManager : MonoBehaviour
         LoginRequest loginReq = new LoginRequest 
         { 
             email = emailField.text,
-            password = passwordField.text
+            password = passwordField.text,
+            isGameClient = true
         };
         HttpResponseMessage response = await userApi.login(loginReq);
 
