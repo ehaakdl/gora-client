@@ -7,7 +7,7 @@ using System.Threading.Tasks;
 public class UserApi
 {
     //환경변수로 참조
-    private string apiUrl = "http://localhost:8080";
+    private string apiUrl = "http://localhost:8181";
     private static readonly HttpClient httpClient = new HttpClient();
 
     public async Task<HttpResponseMessage> login(LoginRequest loginRequest)
