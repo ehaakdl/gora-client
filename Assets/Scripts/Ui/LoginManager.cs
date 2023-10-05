@@ -18,8 +18,8 @@ public class LoginManager : MonoBehaviour
 
     public async void onClick()
     {
-        LoginRequest loginReq = new LoginRequest 
-        { 
+        LoginRequest loginReq = new LoginRequest
+        {
             email = emailField.text,
             password = passwordField.text,
         };
@@ -36,8 +36,9 @@ public class LoginManager : MonoBehaviour
         {
             Debug.Log("login fail");
         }
-        
+
     }
+
     void Start()
     {
         userApi = new UserApi();
@@ -72,7 +73,6 @@ public class LoginManager : MonoBehaviour
         else if (Input.GetKeyDown(KeyCode.Return))
         {
             loginButton.onClick.Invoke();
-            
         }
     }
 }

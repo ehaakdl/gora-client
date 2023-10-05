@@ -14,7 +14,7 @@ public class NetworkDispatcher
         }
     }
 
-    public static void Dispatcher()
+    public void Dispatcher()
     {
         while (!GameManager.isQuit)
         {
