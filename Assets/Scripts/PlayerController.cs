@@ -5,26 +5,28 @@ using UnityEngine;
 
 public class PlayerController : MonoBehaviour
 {
+
+    private Animator animator;
     void Start()
     {
-       
+        animator = GetComponent<Animator>();
     }
     public float speed = 2;
 
     void Update()
     {
         float horizontalInput = Input.GetAxis("Horizontal");
-        Vector3 moveDirection = new Vector3(0f,0f,0f);
-        if (horizontalInput != 0)
-        {
-            moveDirection = new Vector3(horizontalInput, 0f, 0f);
-        }
-        
         float verticalInput = Input.GetAxis("Vertical");
-        if (verticalInput != 0)
-        {
-            moveDirection = new Vector3(0f, verticalInput, 0f);
-        }
+        var isMove = horizontalInput != 0 || verticalInput != 0;
+        animator.SetBool("IsMove", isMove);
+        
+        if (!isMove) return;
+        animator.SetFloat("Horizontal", horizontalInput);
+        animator.SetFloat("Vertical", verticalInput);
+        transform.localScale = new Vector3(horizontalInput>0 ? -1 : 1, 1);
+
+        Vector3 moveDirection = new Vector3(horizontalInput, verticalInput, 0f);
+        moveDirection = moveDirection.normalized;
         
         transform.Translate(moveDirection * speed * Time.deltaTime);
     }
