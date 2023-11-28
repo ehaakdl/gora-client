@@ -77,7 +77,7 @@ public class GameManager : MonoBehaviour
     {
         if (UserAuthRepository.Instance.accessToken == null)
         {
-            Debug.Log("please Login");
+            //Debug.Log("please Login");
             return;
         }
 
