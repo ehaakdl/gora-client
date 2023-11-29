@@ -11,12 +11,13 @@ public class LoginManager : MonoBehaviour
 {
     EventSystem system;
     public Button loginButton;
+    public Button signUpButton;
     public Selectable firstInputField;
     public TMP_InputField emailField;
     public TMP_InputField passwordField;
     private UserApi userApi;
 
-    public async void onClick()
+    public async void LogIn()
     {
         LoginRequest loginReq = new LoginRequest
         {
@@ -30,7 +31,7 @@ public class LoginManager : MonoBehaviour
         {
             CommonResponse commonResponse = JsonConvert.DeserializeObject<CommonResponse>(responseJson);
             UserAuthRepository.Instance.accessToken = (string)commonResponse.data;
-            SceneManager.LoadScene("MainScene");
+            //SceneManager.LoadScene("MainScene");
         }
         else
         {
@@ -39,14 +40,40 @@ public class LoginManager : MonoBehaviour
 
     }
 
+    public async void SignUp()
+    {
+        LoginRequest loginReq = new LoginRequest
+        {
+            email = emailField.text,
+            password = passwordField.text,
+        };
+        HttpResponseMessage response = await userApi.SignUp(loginReq);
+
+        string responseJson = await response.Content.ReadAsStringAsync();
+        Debug.Log(response.StatusCode);
+        Debug.Log(responseJson.Replace(",", ",\n"));
+        if (response.StatusCode == HttpStatusCode.OK)
+        {
+            CommonResponse commonResponse = JsonConvert.DeserializeObject<CommonResponse>(responseJson);
+            Debug.Log("SignUp Ok");
+        }
+        else
+        {
+            Debug.Log("SignUp fail");
+        }
+
+    }
+
     void Start()
     {
         userApi = new UserApi();
-        loginButton.onClick.AddListener(onClick);
+        loginButton.onClick.AddListener(LogIn);
+        signUpButton.onClick.AddListener(SignUp);
 
         system = EventSystem.current;
         firstInputField.Select();
         
+
     }
 
     // Update is called once per frame
@@ -74,5 +101,12 @@ public class LoginManager : MonoBehaviour
         {
             loginButton.onClick.Invoke();
         }
+    }
+    public void GoogleLogin()
+    {
+        var urlBase = "https://accounts.google.com/o/oauth2/v2/auth?scope=email%20profile&response_type=code&state=security_token%3D138r5719ru3e1%26url%3Dhttps%3A%2F%2Foauth2.example.com%2Ftoken";
+        var urlRedirection = "redirect_uri=http://localhost:8080/";
+        var urlID = "client_id=361182045625-mn689vkqc2ukaavtg8l5q547gt5h9q1p.apps.googleusercontent.com";
+        Application.OpenURL(urlBase+"&"+urlRedirection+"&"+urlID);
     }
 }
