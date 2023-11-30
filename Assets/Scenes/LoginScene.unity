@@ -1331,8 +1331,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: d9b19e1875bbe344ea7d8b3e18cdb68d, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  clientId: 843307007567-4dhsploof6dmgbqtmqnkltf7ck2v2skp.apps.googleusercontent.com
-  clientSecret: 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
+  clientId: 843307007567-4l6dtj4a0kl5fdi3meh51u1tko7fu7l7.apps.googleusercontent.com
+  clientSecret: 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
 --- !u!1 &1516619138
 GameObject:
   m_ObjectHideFlags: 0
