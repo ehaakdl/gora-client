@@ -33,12 +33,4 @@ public class UserApi
         HttpResponseMessage response = await httpClient.PostAsync(url, content);
         return response;
     }
-    public async Task<HttpResponseMessage> SignUp(LoginRequest loginRequest)
-    {
-        string url = apiUrl + "/api/v1/signup";
-        string json = JsonConvert.SerializeObject(loginRequest);
-        var content = new StringContent(json, Encoding.UTF8, "application/json");
-        HttpResponseMessage response = await httpClient.PostAsync(url, content);
-        return response;
-    }
 }
