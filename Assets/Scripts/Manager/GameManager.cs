@@ -6,7 +6,6 @@ public class GameManager : MonoBehaviour
 {
     private static GameManager instance = null;
     private Thread networkDispatcherThread;
-    private GameObject player = null;
     private HealthCheckManager healthCheckManager;
     private Thread networkTcpRecvThread;
     private Thread networkudpRecvThread;
@@ -36,9 +35,8 @@ public class GameManager : MonoBehaviour
             this.healthCheckManager = GetComponent<HealthCheckManager>();
 
             NetworkManager.Instance.ConnectTcp();
+            NetworkManager.Instance.ListenUdp();
             NetworkManager.Instance.ConnectUdp();
-
-            this.player = GameObject.Find("Player");
 
             networkDispatcherThread = new Thread(NetworkDispatcher.Instance.Dispatcher);
             networkDispatcherThread.Start();
@@ -73,29 +71,7 @@ public class GameManager : MonoBehaviour
         
     }
     
-    private void setPlayerCoordinate()
-    {
-        if (UserAuthRepository.Instance.accessToken == null)
-        {
-            //Debug.Log("please Login");
-            return;
-        }
-
-        PlayerCoordinate coordinate = new PlayerCoordinate
-        {
-            x = player.transform.position.x,
-            y = player.transform.position.y
-        };
-
-        NetworkPacket packet = new NetworkPacket
-        {
-            data = coordinate,
-            type = (int)ServiceType.player_coordinate,
-            key = UserAuthRepository.Instance.accessToken
-        };
-
-        NetworkDispatcher.playerCoordinatePacket = packet;
-    }
+    
     
     void OnApplicationQuit()
     {
@@ -105,6 +81,6 @@ public class GameManager : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
-        setPlayerCoordinate();
+       
     }
 }

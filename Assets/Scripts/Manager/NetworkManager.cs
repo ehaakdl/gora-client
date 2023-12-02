@@ -6,15 +6,14 @@ using UnityEngine;
 using System.Text;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
+using Protobuf;
+using Google.Protobuf;
 
 public class NetworkManager
 {
     private static Socket clientTcpSocket = null;
     private UdpClient listenUdp = null;
     private UdpClient connectUdp = null;
-    private static int RECV_BUF_SIZE = 1024;
-    private static StringBuilder tcpRecvAssemble = new StringBuilder();
-    private static StringBuilder udpRecvAssemble = new StringBuilder();
     private static readonly Lazy<NetworkManager> instance = new Lazy<NetworkManager>(() => new NetworkManager());
     public static NetworkManager Instance
     {
@@ -29,18 +28,17 @@ public class NetworkManager
     // TCP, UDP 지원
     public void send(NetworkInfo networkInfo)
     {
-        int protocol = (int)networkInfo.protocol;
-        if (protocol == (int)NetworkProtocolType.tcp)
+        if (networkInfo.protocol == NetworkProtocolType.tcp)
         {
             SocketAsyncEventArgs socketAsyncEventArgs = new SocketAsyncEventArgs();
             socketAsyncEventArgs.Completed += new EventHandler<SocketAsyncEventArgs>(tcpIoCompleted);
-            byte[] sendPacket = NetworkPacket.convertToByteArray(networkInfo.packet);
+            byte[] sendPacket = networkInfo.packet.ToByteArray();
             socketAsyncEventArgs.SetBuffer(sendPacket, 0, sendPacket.Length);
             clientTcpSocket.SendAsync(socketAsyncEventArgs);
         }
         else
         {
-            byte[] sendPacket = NetworkPacket.convertToByteArray(networkInfo.packet);
+            byte[] sendPacket = networkInfo.packet.ToByteArray();
             this.connectUdp.SendAsync(sendPacket, sendPacket.Length);
         }
     }
@@ -58,37 +56,12 @@ public class NetworkManager
     {
         while (!GameManager.isQuit)
         {
-            Byte[] recvBuffer = new Byte[RECV_BUF_SIZE];
+            Byte[] recvBuffer = new Byte[NetworkUtils.TOTAL_MAX_SIZE];
             // port env change
-            IPEndPoint serverIPEndPoint = new IPEndPoint(IPAddress.Any, 11111);
+            IPEndPoint serverIPEndPoint = new IPEndPoint(IPAddress.Any, 11112);
             recvBuffer = listenUdp.Receive(ref serverIPEndPoint);
-            string recvToStirng = Encoding.UTF8.GetString(recvBuffer, 0, recvBuffer.Length);
-            udpRecvAssemble.Append(recvToStirng);
-            int index = udpRecvAssemble.ToString().IndexOf(NetworkPacket.EOF);
-            if (index < 0)
-            {
-                continue;
-            }
-
-            string jsonUnit = udpRecvAssemble.ToString(0, index);
-            udpRecvAssemble.Remove(0, index);
-            udpRecvAssemble.Remove(0, NetworkPacket.EOF.Length);
-            NetworkPacket packet = JsonConvert.DeserializeObject<NetworkPacket>(jsonUnit);
-
-            // recv object model routing 
-            if ((int)packet.type == (int)ServiceType.player_coordinate)
-            {
-                if (packet.data is not JObject)
-                {
-                    Debug.Log("잘못된 패킷 수신됐습니다");
-                    continue;
-                }
-
-                JObject jObject = (JObject)packet.data;
-                PlayerCoordinate coordinate = JsonConvert.DeserializeObject<PlayerCoordinate>(jObject.ToString());
-                Debug.Log(coordinate.x + "," + coordinate.y);
-            }
-            Thread.Sleep(200);
+            
+            
         }
     }
 
@@ -97,34 +70,10 @@ public class NetworkManager
     {
         while (!GameManager.isQuit)
         {
-            Byte[] recvBuffer = new Byte[RECV_BUF_SIZE];
-            int recvSize = clientTcpSocket.Receive(recvBuffer, RECV_BUF_SIZE, SocketFlags.None);
-            string recvToStirng = Encoding.UTF8.GetString(recvBuffer, 0, recvSize);
-            tcpRecvAssemble.Append(recvToStirng);
-            int index = tcpRecvAssemble.ToString().IndexOf(NetworkPacket.EOF);
-            if (index < 0)
-            {
-                continue;
-            }
-
-            string jsonUnit = tcpRecvAssemble.ToString(0, index);
-            tcpRecvAssemble.Remove(0, index);
-            tcpRecvAssemble.Remove(0, NetworkPacket.EOF.Length);
-            NetworkPacket packet = JsonConvert.DeserializeObject<NetworkPacket>(jsonUnit);
-
-            // recv object model routing 
-            if ((int)packet.type == (int)ServiceType.player_coordinate)
-            {
-                if (packet.data is not JObject)
-                {
-                    Debug.Log("잘못된 패킷 수신됐습니다");
-                    continue;
-                }
-
-                JObject jObject = (JObject)packet.data;
-                PlayerCoordinate coordinate = JsonConvert.DeserializeObject<PlayerCoordinate>(jObject.ToString());
-            }
-            Thread.Sleep(200);
+            Byte[] recvBuffer = new Byte[NetworkUtils.TOTAL_MAX_SIZE];
+            int recvSize = clientTcpSocket.Receive(recvBuffer, NetworkUtils.TOTAL_MAX_SIZE, SocketFlags.None);
+            
+            
         }
     }
 
@@ -166,12 +115,14 @@ public class NetworkManager
         }
     }
 
-    public void ConnectUdp()
+    public void ListenUdp()
     {
         // 클라이언트 수신용 소켓
         int listenPort = 11112;
         this.listenUdp = new UdpClient(listenPort);
-
+    }
+    public void ConnectUdp()
+    {
         //서버 송신용 소켓
         this.connectUdp = new UdpClient();
         //string ip = Environment.GetEnvironmentVariable("SERVER_UDP_IP");
@@ -198,12 +149,6 @@ public class NetworkManager
         {
             Debug.Log("Connecting to Server");
             clientTcpSocket.Connect(serverEndPoint);
-
-            // send 패킷 이벤트 발생 시 호출하기, 이건 임시로 추가해둠 제,
-            NetworkPacket packet = new NetworkPacket {
-                data = "data",
-                type = 1
-            };
         }
         catch (SocketException e)
         {

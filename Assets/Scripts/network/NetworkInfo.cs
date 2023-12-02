@@ -1,3 +1,5 @@
+using Protobuf;
+
 public class NetworkInfo
 {
     // tcp==1, udp==2

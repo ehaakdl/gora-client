@@ -1,9 +1,9 @@
-﻿using System;
+﻿using Protobuf;
+using System;
 using System.Threading;
 
 public class NetworkDispatcher
 {
-    public static NetworkPacket playerCoordinatePacket{ get; set; }
     private static readonly Lazy<NetworkDispatcher> instance =
     new Lazy<NetworkDispatcher>(() => new NetworkDispatcher());
     public static NetworkDispatcher Instance
@@ -18,12 +18,20 @@ public class NetworkDispatcher
     {
         while (!GameManager.isQuit)
         {
-            if(playerCoordinatePacket == null)
-            {
-                continue;
-            }
-            NetworkManager.Instance.send(new NetworkInfo(NetworkProtocolType.udp, playerCoordinatePacket));
-            Thread.Sleep(200);
+
+            NetworkPacket packet = NetworkUtils.GetEmptyData(NetowrkServiceType.EServiceType.Test, NetworkUtils.GetIdentify());
+            NetworkInfo networkInfo = new NetworkInfo(
+                NetworkProtocolType.tcp,
+                packet
+            );
+            NetworkManager.Instance.send(networkInfo);
+            Thread.Sleep(3000);
+            networkInfo = new NetworkInfo(
+                NetworkProtocolType.udp,
+                packet
+            );
+            NetworkManager.Instance.send(networkInfo);
+            Thread.Sleep(3000);
         }
     }
 }
