@@ -1,12 +1,7 @@
-using System.Threading;
 using System.Net.Sockets;
 using System;
 using System.Net;
 using UnityEngine;
-using System.Text;
-using Newtonsoft.Json;
-using Newtonsoft.Json.Linq;
-using Protobuf;
 using Google.Protobuf;
 
 public class NetworkManager
@@ -60,6 +55,7 @@ public class NetworkManager
             // port env change
             IPEndPoint serverIPEndPoint = new IPEndPoint(IPAddress.Any, 11112);
             recvBuffer = listenUdp.Receive(ref serverIPEndPoint);
+            NetworkBufferManager.Instance.AppendByTcp(recvBuffer);
             
             
         }
@@ -72,8 +68,8 @@ public class NetworkManager
         {
             Byte[] recvBuffer = new Byte[NetworkUtils.TOTAL_MAX_SIZE];
             int recvSize = clientTcpSocket.Receive(recvBuffer, NetworkUtils.TOTAL_MAX_SIZE, SocketFlags.None);
-            
-            
+            NetworkBufferManager.Instance.AppendByUdp(recvBuffer);
+
         }
     }
 
