@@ -11,9 +11,9 @@ using Protobuf;
 class NetworkUtils
 {
     public const byte PAD = 0; // 패딩 바이트 값 설정
-    public const int DATA_MAX_SIZE = 1448;
+    public const int DATA_MAX_SIZE = 1487;
     public static int TOTAL_MAX_SIZE = 1500;
-    public int HEADER_SIZE = 659;
+
     public static string? GetLocalIpAddress()
     {
         try
@@ -85,8 +85,6 @@ class NetworkUtils
             Data = dateByteString,
             DataSize = (uint)newBytes.Length,
             Type = (uint)type,
-            Identify = identify,
-            TotalSize = (uint)newBytes.Length
         };
     }
 
@@ -145,9 +143,7 @@ class NetworkUtils
             {
                 Data = ByteString.CopyFrom(newBytes),
                 DataSize = (uint)dataSize,
-                TotalSize = (uint)segmentTotalSize,
                 Type = (uint)type,
-                Identify = identify
             };
 
             result.Add(packet);

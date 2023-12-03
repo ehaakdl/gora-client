@@ -55,7 +55,7 @@ public class NetworkManager
             // port env change
             IPEndPoint serverIPEndPoint = new IPEndPoint(IPAddress.Any, 11112);
             recvBuffer = listenUdp.Receive(ref serverIPEndPoint);
-            NetworkBufferManager.Instance.AppendByTcp(recvBuffer);
+            NetworkBufferManager.Instance.AppendByUdp(recvBuffer);
             
             
         }
@@ -68,7 +68,7 @@ public class NetworkManager
         {
             Byte[] recvBuffer = new Byte[NetworkUtils.TOTAL_MAX_SIZE];
             int recvSize = clientTcpSocket.Receive(recvBuffer, NetworkUtils.TOTAL_MAX_SIZE, SocketFlags.None);
-            NetworkBufferManager.Instance.AppendByUdp(recvBuffer);
+            NetworkBufferManager.Instance.AppendByTcp(recvBuffer);
 
         }
     }

@@ -3,7 +3,9 @@ using Newtonsoft.Json.Linq;
 using Protobuf;
 using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.IO;
+using static UnityEditor.Progress;
 
 
 public class NetworkBufferManager
@@ -19,144 +21,93 @@ public class NetworkBufferManager
     }
 
     private byte[] TcpBuffer;
+    private int TcpBufferIndex;
     private byte[] UdpBuffer;
+    private int UdpBufferIndex;
 
-    private static Dictionary<string, NetworkBuffer> DataBuffers; // Define this dictionary
-
-    private List<TransportData> AssembleData(List<NetworkPacket> packets, string resourceKey, NetworkProtocolType networkType)
+    private List<TransportData> AssembleData(List<NetworkPacket> packets)
     {
         List<TransportData> result = new List<TransportData>();
-
-      
-
         foreach (var packet in packets)
         {
-            string identify = packet.Identify;
-            uint totalSize = packet.TotalSize;
             byte[] data = packet.Data.ToByteArray();
             EServiceType? serviceType = EServiceTypeExtensions.Convert((int)packet.Type);
-            uint dataNonPaddingSize = packet.DataSize;
-            if (DataBuffers.TryGetValue(identify, out NetworkBuffer dataBuffer))
+            if (serviceType == null)
             {
-                byte[] newBytes = new byte[dataBuffer.GetBuffer().Length + data.Length];
-                dataBuffer.GetBuffer().CopyTo(newBytes, 0);
-                data.CopyTo(newBytes, dataBuffer.GetBuffer().Length);
-                dataBuffer.SetBuffer(newBytes);
+                throw new Exception();
+            }
+            uint dataSize = packet.DataSize;
+            TransportData transportData;
+            if (dataSize < NetworkUtils.DATA_MAX_SIZE)
+            {
+                transportData = new TransportData
+                {
+                    data = data,
+                    type = (EServiceType)serviceType
+                };
+            }
+            else if (dataSize > NetworkUtils.DATA_MAX_SIZE)
+            {
+                throw new Exception();
             }
             else
             {
-                dataBuffer = new NetworkBuffer(data);
+                transportData = new TransportData
+                {
+                    data = data,
+                    type = (EServiceType)serviceType
+                };
             }
+            Test tt = Test.Parser.ParseFrom(data);
 
-            if (dataNonPaddingSize < NetworkUtils.DATA_MAX_SIZE)
-            {
-                // 세션 체크용 패킷만 데이터가 비어있을수가 있다. 그외의 서비스 패킷은 다 에러 처리
-                if (dataNonPaddingSize == 0)
-                {
-                    if (serviceType == EServiceType.HealthCheck)
-                    {
-                        TransportData transportData = new TransportData
-                        {
-                            data
-                        }
-                                
-                        result.add(transportData);
-                        clientNetworkBuffer.removeDataWrapper(identify, networkType);
-                    }
-                    else
-                    {
-                        throw new RuntimeException();
-                    }
-                }
-                else
-                {
-                    try
-                    {
-                        TransportData transportData = TransportData.convert(dataBuffer, data, dataNonPaddingSize,
-                                dataWrapper,
-                                totalSize, serviceType, identify, networkType, resourceKey, clientNetworkBuffer);
-                        if (transportData != null)
-                        {
-                            result.add(transportData);
-                            clientNetworkBuffer.removeDataWrapper(identify, networkType);
-                        }
-                    }
-                    catch (ExpiredPacketException e)
-                    {
-                        clientNetworkBuffer.removeDataWrapper(identify, networkType);
-                    }
-                }
-            }
-            else if (dataNonPaddingSize > NetworkUtils.DATA_MAX_SIZE)
-            {
-                throw new RuntimeException();
-            }
-            else
-            {
-                try
-                {
-                    TransportData transportData = TransportData.convert(dataBuffer, data, dataNonPaddingSize,
-                            dataWrapper,
-                            totalSize, serviceType, identify, networkType, resourceKey, clientNetworkBuffer);
-                    if (transportData != null)
-                    {
-                        result.add(transportData);
-                        clientNetworkBuffer.removeDataWrapper(identify, networkType);
-                    }
-                }
-                catch (ExpiredPacketException e)
-                {
-                    clientNetworkBuffer.removeDataWrapper(identify, networkType);
-                }
-            }
+            result.Add(transportData);
         }
 
         return result;
     }
 
-    public List<TransportData> AssemblePacket(string resourceKey, NetworkProtocolType networkType, byte[] packetBytes)
+    public List<TransportData> AssemblePacket(NetworkProtocolType networkType)
     {
         byte[] buffer;
-        if(networkType == NetworkProtocolType.tcp)
+        if (networkType == NetworkProtocolType.tcp)
         {
+            if (TcpBuffer == null)
+            {
+                TcpBuffer = new byte[NetworkUtils.TOTAL_MAX_SIZE];
+                TcpBufferIndex = 0;
+            }
+            
             buffer = TcpBuffer;
         }
         else
         {
+            if (UdpBuffer == null)
+            {
+                UdpBuffer = new byte[NetworkUtils.TOTAL_MAX_SIZE];
+                UdpBufferIndex = 0;
+            }
             buffer = UdpBuffer;
-        }
-
-        if (buffer == null)
-        {
-            return null;
         }
 
         List<NetworkPacket> packets = new List<NetworkPacket>();
         
 
-        int assembleTotalCount = 0;
         if (buffer.Length >= NetworkUtils.TOTAL_MAX_SIZE)
         {
             int remainRecvByte = buffer.Length % NetworkUtils.TOTAL_MAX_SIZE;
-            assembleTotalCount = buffer.Length / NetworkUtils.TOTAL_MAX_SIZE;
+            int assembleTotalCount = buffer.Length / NetworkUtils.TOTAL_MAX_SIZE;
 
             // 네트워크 패킷 클래스로 역직렬화
             byte[] convertBytes = new byte[NetworkUtils.TOTAL_MAX_SIZE];
-            int from = 0;
             int to;
 
             for (int count = 0; count < assembleTotalCount; count++)
             {
-                from = count * NetworkUtils.TOTAL_MAX_SIZE;
-                to = (count + 1) * NetworkUtils.TOTAL_MAX_SIZE;
-                buffer.CopyTo(convertBytes, 0);
+                int from = count * NetworkUtils.TOTAL_MAX_SIZE;
+                Array.Copy(buffer, from, convertBytes, 0, convertBytes.Length);
                 packets.Add(NetworkPacket.Parser.ParseFrom(convertBytes));
             }
 
-            // 역직렬화 후 남은 데이터는 추출해서 buffer reset후 다시 buffer에 추가
-            // 공유자원인 버퍼 리셋은 무조건 여기서만 해야한다. 다른 스레드에서 리셋을 하면안됨(배열 인덱스 예외 발생함)
-            // 리셋 하더라도 배열 값이 0으로 초기화 되기때문에 여기서만 리셋한다.
-            // 자원 해제는 버퍼를 담는 맵 자체를 삭제하고 버퍼 자체는 건들지 말자.
             if (remainRecvByte > 0)
             {
                 int endPos = buffer.Length - remainRecvByte;
@@ -187,24 +138,44 @@ public class NetworkBufferManager
                 }
             }
         }
-        else
-        {
-            return AssembleData(packets, resourceKey, networkType);
-        }
+
+        
+
+        return null;
     }
     public void AppendByTcp(byte[] buffer)
     {
         if (TcpBuffer == null)
         {
             TcpBuffer = buffer;
+            TcpBufferIndex = 0;
         }
         else
         {
-            byte[] newBuffer = new byte[TcpBuffer.Length + buffer.Length];
-            TcpBuffer.CopyTo(newBuffer, 0);
-            buffer.CopyTo(newBuffer, TcpBuffer.Length);
-            TcpBuffer = newBuffer;
+            if(buffer.Length > TcpBuffer.Length)
+            {
+                // 새로할당
+            }
+            else
+            {
+                if(TcpBufferIndex + 1 + buffer.Length > TcpBuffer.Length)
+                {
+                    // 새로할당
+                    byte[] newBuffer = new byte[TcpBufferIndex + 1 + buffer.Length];
+                    TcpBuffer.CopyTo(newBuffer, 0);
+                    buffer.CopyTo(newBuffer, TcpBuffer.Length);
+                    TcpBuffer = newBuffer;
+                }
+                else
+                {
+                    // 기존버퍼 append
+                }
+            }
+           
         }
+        //List<TransportData> transportDatas = AssemblePacket(NetworkProtocolType.tcp);
+        AssemblePacket(NetworkProtocolType.tcp);
+
     }
 
     public void AppendByUdp(byte[] buffer)
@@ -219,9 +190,11 @@ public class NetworkBufferManager
             UdpBuffer.CopyTo(newBuffer, 0);
             buffer.CopyTo(newBuffer, UdpBuffer.Length);
             UdpBuffer = newBuffer;
-
-            
         }
+
+
+        //List<TransportData> transportDatas = AssemblePacket(NetworkProtocolType.udp);
+        AssemblePacket(NetworkProtocolType.udp);
     }
 
 }
