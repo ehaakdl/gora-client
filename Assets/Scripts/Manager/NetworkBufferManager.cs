@@ -5,6 +5,7 @@ using System;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.IO;
+using System.Text;
 using static UnityEditor.Progress;
 
 
@@ -20,10 +21,8 @@ public class NetworkBufferManager
         }
     }
 
-    private byte[] TcpBuffer;
-    private int TcpBufferIndex;
-    private byte[] UdpBuffer;
-    private int UdpBufferIndex;
+    private MemoryStream TcpBuffer;
+    private MemoryStream UdpBuffer;
 
     private List<TransportData> AssembleData(List<NetworkPacket> packets)
     {
@@ -42,7 +41,7 @@ public class NetworkBufferManager
             {
                 transportData = new TransportData
                 {
-                    data = data,
+                    data = NetworkUtils.RemovePadding(data, NetworkUtils.DATA_MAX_SIZE - (int)dataSize),
                     type = (EServiceType)serviceType
                 };
             }
@@ -58,8 +57,6 @@ public class NetworkBufferManager
                     type = (EServiceType)serviceType
                 };
             }
-            Test tt = Test.Parser.ParseFrom(data);
-
             result.Add(transportData);
         }
 
@@ -68,13 +65,12 @@ public class NetworkBufferManager
 
     public List<TransportData> AssemblePacket(NetworkProtocolType networkType)
     {
-        byte[] buffer;
+        MemoryStream buffer;
         if (networkType == NetworkProtocolType.tcp)
         {
             if (TcpBuffer == null)
             {
-                TcpBuffer = new byte[NetworkUtils.TOTAL_MAX_SIZE];
-                TcpBufferIndex = 0;
+                TcpBuffer = new MemoryStream();
             }
             
             buffer = TcpBuffer;
@@ -83,8 +79,7 @@ public class NetworkBufferManager
         {
             if (UdpBuffer == null)
             {
-                UdpBuffer = new byte[NetworkUtils.TOTAL_MAX_SIZE];
-                UdpBufferIndex = 0;
+                UdpBuffer = new MemoryStream();
             }
             buffer = UdpBuffer;
         }
@@ -94,107 +89,76 @@ public class NetworkBufferManager
 
         if (buffer.Length >= NetworkUtils.TOTAL_MAX_SIZE)
         {
-            int remainRecvByte = buffer.Length % NetworkUtils.TOTAL_MAX_SIZE;
-            int assembleTotalCount = buffer.Length / NetworkUtils.TOTAL_MAX_SIZE;
+            buffer.Seek(0, SeekOrigin.Begin);
+
+            long remainRecvByte = buffer.Length % NetworkUtils.TOTAL_MAX_SIZE;
+            long assembleTotalCount = buffer.Length / NetworkUtils.TOTAL_MAX_SIZE;
 
             // 네트워크 패킷 클래스로 역직렬화
             byte[] convertBytes = new byte[NetworkUtils.TOTAL_MAX_SIZE];
-            int to;
 
             for (int count = 0; count < assembleTotalCount; count++)
             {
-                int from = count * NetworkUtils.TOTAL_MAX_SIZE;
-                Array.Copy(buffer, from, convertBytes, 0, convertBytes.Length);
+                buffer.Read(convertBytes);
                 packets.Add(NetworkPacket.Parser.ParseFrom(convertBytes));
             }
 
             if (remainRecvByte > 0)
             {
-                int endPos = buffer.Length - remainRecvByte;
                 byte[] remainBytes = new byte[remainRecvByte];
-                Array.Copy(buffer, endPos, remainBytes, 0, remainBytes.Length);
+                buffer.Read(remainBytes);
+                buffer.Close();
                 if (networkType == NetworkProtocolType.tcp)
                 {
-                    TcpBuffer = new byte[NetworkUtils.TOTAL_MAX_SIZE];
-                    buffer = TcpBuffer;
+                    TcpBuffer = new MemoryStream();
                 }
                 else
                 {
-                    UdpBuffer = new byte[NetworkUtils.TOTAL_MAX_SIZE];
-                    buffer = UdpBuffer;
+                    UdpBuffer = new MemoryStream();
                 }
-                
-                remainBytes.CopyTo(buffer, 0);
             }
             else
             {
                 if (networkType == NetworkProtocolType.tcp)
                 {
-                    TcpBuffer = new byte[NetworkUtils.TOTAL_MAX_SIZE];
+                    TcpBuffer = new MemoryStream();
                 }
                 else
                 {
-                    UdpBuffer = new byte[NetworkUtils.TOTAL_MAX_SIZE];
+                    UdpBuffer = new MemoryStream();
                 }
             }
         }
 
         
 
-        return null;
+        return AssembleData(packets);
     }
     public void AppendByTcp(byte[] buffer)
     {
         if (TcpBuffer == null)
         {
-            TcpBuffer = buffer;
-            TcpBufferIndex = 0;
+            TcpBuffer = new MemoryStream(buffer);
         }
         else
         {
-            if(buffer.Length > TcpBuffer.Length)
-            {
-                // 새로할당
-            }
-            else
-            {
-                if(TcpBufferIndex + 1 + buffer.Length > TcpBuffer.Length)
-                {
-                    // 새로할당
-                    byte[] newBuffer = new byte[TcpBufferIndex + 1 + buffer.Length];
-                    TcpBuffer.CopyTo(newBuffer, 0);
-                    buffer.CopyTo(newBuffer, TcpBuffer.Length);
-                    TcpBuffer = newBuffer;
-                }
-                else
-                {
-                    // 기존버퍼 append
-                }
-            }
-           
+            TcpBuffer.Write(buffer);
         }
-        //List<TransportData> transportDatas = AssemblePacket(NetworkProtocolType.tcp);
-        AssemblePacket(NetworkProtocolType.tcp);
-
+        List<TransportData> transportDatas = AssemblePacket(NetworkProtocolType.tcp);
     }
 
     public void AppendByUdp(byte[] buffer)
     {
         if(UdpBuffer== null)
         {
-            UdpBuffer = buffer;
+            UdpBuffer = new MemoryStream(buffer);
         }
         else
         {
-            byte[] newBuffer = new byte[UdpBuffer.Length + buffer.Length];
-            UdpBuffer.CopyTo(newBuffer, 0);
-            buffer.CopyTo(newBuffer, UdpBuffer.Length);
-            UdpBuffer = newBuffer;
+            UdpBuffer.Write(buffer);
         }
 
-
-        //List<TransportData> transportDatas = AssemblePacket(NetworkProtocolType.udp);
-        AssemblePacket(NetworkProtocolType.udp);
+        List<TransportData> transportDatas = AssemblePacket(NetworkProtocolType.udp);
     }
 
 }
