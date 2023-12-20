@@ -22,7 +22,7 @@ public class PlayerController : MonoBehaviour
     {
         //Debug.Log(chatmanager);
         //Debug.Log(chatmanager.ChatInputField);
-        Debug.Log(chatmanager.ChatInputField.isFocused);
+        //Debug.Log(chatmanager.ChatInputField.isFocused);
         if (!chatmanager.ChatInputField.isFocused)
         {
             float horizontalInput = Input.GetAxis("Horizontal");
