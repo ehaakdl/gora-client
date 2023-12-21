@@ -76,7 +76,7 @@ public class ChatManager : MonoBehaviour, IPointerEnterHandler, IPointerExitHand
         {
             //isFocused 활성화 <-> 비활성화
             ChatInputField.Select();
-            Debug.Log(ChatInputField.isFocused);
+            //Debug.Log(ChatInputField.isFocused);
         }
 
         //isFocused시 채팅창 활성화 유지
