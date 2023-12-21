@@ -74,8 +74,7 @@ namespace Protobuf {
       msg_ = other.msg_;
       _unknownFields = pb::UnknownFieldSet.Clone(other._unknownFields);
     }
-
-    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
     [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
     public Test Clone() {
       return new Test(this);
@@ -86,7 +85,8 @@ namespace Protobuf {
     private readonly static pb::ByteString MsgDefaultValue = pb::ByteString.Empty;
 
     private pb::ByteString msg_;
-    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
     [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
     public pb::ByteString Msg {
       get { return msg_ ?? MsgDefaultValue; }

@@ -15,9 +15,6 @@ public class Chatsystem : MonoBehaviour
     private NetworkManager networkmanager;
     private NetworkInfo networkinfo;
 
-    public const byte PAD = 0; // 패딩 바이트 값 설정
-    public const int DATA_MAX_SIZE = 1487;
-
     TMP_InputField ChatInputField;
 
 
@@ -44,41 +41,36 @@ public class Chatsystem : MonoBehaviour
         }
     }
 
-    public static byte[] AddPadding(byte[]? original, int blockSize)
-    {
-        if (original == null)
-        {
-            return new byte[blockSize]; // 모든 요소가 PAD(0)으로 초기화됨
-        }
-        int padLength = blockSize;
-        byte[] padded = new byte[original.Length + padLength];
-        Array.Copy(original, padded, original.Length); // 배열 복사
-
-        for (int i = original.Length; i < padded.Length; i++)
-        {
-            padded[i] = PAD; // 나머지 부분을 PAD로 채움
-        }
-
-        return padded;
-    }
+    
 
     void messegeTest(string typing)
     {
 
         NetworkPacket Messege = MessegeName(EServiceType.Test, typing);
         Debug.Log(typing);
-        Debug.Log(System.Text.Encoding.UTF8.GetBytes(typing).Length);
+        //Debug.Log(System.Text.Encoding.UTF8.GetBytes(typing).Length);
         networkinfo = new NetworkInfo(NetworkProtocolType.tcp, Messege);
     }
 
     public static NetworkPacket MessegeName(EServiceType type, string Messege)
     {
-        byte[] newBytes = AddPadding(System.Text.Encoding.UTF8.GetBytes(Messege), DATA_MAX_SIZE);
-        ByteString bytesrting = ByteString.CopyFrom(newBytes);
+
+        ByteString bytesrting = ByteString.CopyFromUtf8(Messege);
+
+        Test sendmessege = new Test { Msg = bytesrting };
+        byte[] msgbyte = sendmessege.ToByteArray();
+        msgbyte = NetworkUtils.AddPadding(msgbyte, 1500 - msgbyte.Length);
+
+        bytesrting = ByteString.CopyFrom(msgbyte);
+
+        Debug.Log(bytesrting);
+        Debug.Log(msgbyte);
+        Debug.Log(msgbyte.Length);
+
         return new NetworkPacket
         {
             Data = bytesrting,
-            DataSize = (uint)newBytes.Length,
+            DataSize = (uint)msgbyte.Length,
             Type = (uint)type //이건 사실 뭐가 들어가는지 몰라서 TEST로 해두었습니다.
         };
     }
