@@ -7,12 +7,14 @@ using System.Net.Sockets;
 using Google.Protobuf;
 using NetowrkServiceType;
 using Protobuf;
+using static UnityEngine.GraphicsBuffer;
 
 class NetworkUtils
 {
     public const byte PAD = 0; // 패딩 바이트 값 설정
-    public const int DATA_MAX_SIZE = 1487;
+    public const int DATA_MAX_SIZE = 1421;
     public static int TOTAL_MAX_SIZE = 1500;
+    public static string UDP_EMPTY_CHANNEL_ID = "0000000000000000000000000000000000000000000000000000000000000000";
 
     public static string? GetLocalIpAddress()
     {
@@ -74,16 +76,72 @@ class NetworkUtils
         int milliseconds = now.Millisecond;
         return new string(uuidString);
     }
-    public static NetworkPacket GetEmptyData(EServiceType type, string identify)
-    {
-        byte[] newBytes = AddPadding(null, DATA_MAX_SIZE);
 
-        ByteString dateByteString = ByteString.CopyFrom(newBytes);
+    public static NetworkPacket GetPacket(byte[] target, EServiceType type)
+    {
+        if (target == null)
+        {
+            return null;
+        }
+
+        int dataSize = target.Length;
+        if (dataSize >= DATA_MAX_SIZE)
+        {
+            throw new Exception();
+        }
+
+        int paddingSize;
+        if (dataSize < DATA_MAX_SIZE)
+        {
+            paddingSize = DATA_MAX_SIZE - dataSize;
+        }
+        else
+        {
+            paddingSize = 0;
+        }
+
+        if (paddingSize > 0)
+        {
+            target = AddPadding(target, paddingSize);
+        }
+
+        if (target.Length != DATA_MAX_SIZE)
+        {
+            throw new Exception();
+        }
         return new NetworkPacket
         {
 
-            Data = dateByteString,
-            DataSize = (uint)newBytes.Length,
+            Data = ByteString.CopyFrom(target),
+            ChannelId = UDP_EMPTY_CHANNEL_ID,
+            DataSize = (uint)dataSize,
+            Type = (uint)type,
+        };
+    }
+
+
+    public static NetworkPacket GetEmptyData(EServiceType type)
+    {
+        byte[] newBytes = AddPadding(null, NetworkUtils.DATA_MAX_SIZE);
+        return new NetworkPacket
+        {
+
+            Data = ByteString.CopyFrom(newBytes),
+            ChannelId = UDP_EMPTY_CHANNEL_ID,
+            DataSize = (uint)0,
+            Type = (uint)type,
+        };
+    }
+
+    public static NetworkPacket GetEmptyData(EServiceType type, String udpChannelId)
+    {
+        byte[] newBytes = AddPadding(null, DATA_MAX_SIZE);
+        return new NetworkPacket
+        {
+
+            Data = ByteString.CopyFrom(newBytes),
+            ChannelId = udpChannelId,
+            DataSize = (uint)0,
             Type = (uint)type,
         };
     }

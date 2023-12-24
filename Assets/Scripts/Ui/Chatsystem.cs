@@ -58,20 +58,8 @@ public class Chatsystem : MonoBehaviour
         ByteString bytesrting = ByteString.CopyFromUtf8(Messege);
 
         Test sendmessege = new Test { Msg = bytesrting };
-        byte[] msgbyte = sendmessege.ToByteArray();
-        msgbyte = NetworkUtils.AddPadding(msgbyte, 1500 - msgbyte.Length);
-
-        bytesrting = ByteString.CopyFrom(msgbyte);
-
         Debug.Log(bytesrting);
-        Debug.Log(msgbyte);
-        Debug.Log(msgbyte.Length);
-
-        return new NetworkPacket
-        {
-            Data = bytesrting,
-            DataSize = (uint)msgbyte.Length,
-            Type = (uint)type //이건 사실 뭐가 들어가는지 몰라서 TEST로 해두었습니다.
-        };
+        NetworkPacket packet = NetworkUtils.GetPacket(sendmessege.ToByteArray(), type);
+        return packet;
     }
 }

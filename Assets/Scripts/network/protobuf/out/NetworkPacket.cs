@@ -24,14 +24,14 @@ namespace Protobuf {
     static NetworkPacketReflection() {
       byte[] descriptorData = global::System.Convert.FromBase64String(
           string.Concat(
-            "ChNOZXR3b3JrUGFja2V0LnByb3RvEghwcm90b2J1ZiI9Cg1OZXR3b3JrUGFj",
+            "ChNOZXR3b3JrUGFja2V0LnByb3RvEghwcm90b2J1ZiJQCg1OZXR3b3JrUGFj",
             "a2V0EgwKBGRhdGEYASACKAwSDAoEdHlwZRgCIAIoBxIQCghkYXRhU2l6ZRgD",
-            "IAIoB0I2Ch1vcmcuZ29yYS5zZXJ2ZXIubW9kZWwubmV0d29ya0IVTmV0d29y",
-            "a1Bha2NldFByb3RvQnVm"));
+            "IAIoBxIRCgljaGFubmVsSWQYBCACKAlCNwodb3JnLmdvcmEuc2VydmVyLm1v",
+            "ZGVsLm5ldHdvcmtCFk5ldHdvcmtQYWNrY2V0UHJvdG9CdWY="));
       descriptor = pbr::FileDescriptor.FromGeneratedCode(descriptorData,
           new pbr::FileDescriptor[] { },
           new pbr::GeneratedClrTypeInfo(null, null, new pbr::GeneratedClrTypeInfo[] {
-            new pbr::GeneratedClrTypeInfo(typeof(global::Protobuf.NetworkPacket), global::Protobuf.NetworkPacket.Parser, new[]{ "Data", "Type", "DataSize" }, null, null, null, null)
+            new pbr::GeneratedClrTypeInfo(typeof(global::Protobuf.NetworkPacket), global::Protobuf.NetworkPacket.Parser, new[]{ "Data", "Type", "DataSize", "ChannelId" }, null, null, null, null)
           }));
     }
     #endregion
@@ -78,6 +78,7 @@ namespace Protobuf {
       data_ = other.data_;
       type_ = other.type_;
       dataSize_ = other.dataSize_;
+      channelId_ = other.channelId_;
       _unknownFields = pb::UnknownFieldSet.Clone(other._unknownFields);
     }
 
@@ -167,6 +168,32 @@ namespace Protobuf {
       _hasBits0 &= ~2;
     }
 
+    /// <summary>Field number for the "channelId" field.</summary>
+    public const int ChannelIdFieldNumber = 4;
+    private readonly static string ChannelIdDefaultValue = "";
+
+    private string channelId_;
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
+    public string ChannelId {
+      get { return channelId_ ?? ChannelIdDefaultValue; }
+      set {
+        channelId_ = pb::ProtoPreconditions.CheckNotNull(value, "value");
+      }
+    }
+    /// <summary>Gets whether the "channelId" field is set</summary>
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
+    public bool HasChannelId {
+      get { return channelId_ != null; }
+    }
+    /// <summary>Clears the value of the "channelId" field</summary>
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
+    public void ClearChannelId() {
+      channelId_ = null;
+    }
+
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
     [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
     public override bool Equals(object other) {
@@ -185,6 +212,7 @@ namespace Protobuf {
       if (Data != other.Data) return false;
       if (Type != other.Type) return false;
       if (DataSize != other.DataSize) return false;
+      if (ChannelId != other.ChannelId) return false;
       return Equals(_unknownFields, other._unknownFields);
     }
 
@@ -195,6 +223,7 @@ namespace Protobuf {
       if (HasData) hash ^= Data.GetHashCode();
       if (HasType) hash ^= Type.GetHashCode();
       if (HasDataSize) hash ^= DataSize.GetHashCode();
+      if (HasChannelId) hash ^= ChannelId.GetHashCode();
       if (_unknownFields != null) {
         hash ^= _unknownFields.GetHashCode();
       }
@@ -225,6 +254,10 @@ namespace Protobuf {
         output.WriteRawTag(29);
         output.WriteFixed32(DataSize);
       }
+      if (HasChannelId) {
+        output.WriteRawTag(34);
+        output.WriteString(ChannelId);
+      }
       if (_unknownFields != null) {
         _unknownFields.WriteTo(output);
       }
@@ -247,6 +280,10 @@ namespace Protobuf {
         output.WriteRawTag(29);
         output.WriteFixed32(DataSize);
       }
+      if (HasChannelId) {
+        output.WriteRawTag(34);
+        output.WriteString(ChannelId);
+      }
       if (_unknownFields != null) {
         _unknownFields.WriteTo(ref output);
       }
@@ -265,6 +302,9 @@ namespace Protobuf {
       }
       if (HasDataSize) {
         size += 1 + 4;
+      }
+      if (HasChannelId) {
+        size += 1 + pb::CodedOutputStream.ComputeStringSize(ChannelId);
       }
       if (_unknownFields != null) {
         size += _unknownFields.CalculateSize();
@@ -286,6 +326,9 @@ namespace Protobuf {
       }
       if (other.HasDataSize) {
         DataSize = other.DataSize;
+      }
+      if (other.HasChannelId) {
+        ChannelId = other.ChannelId;
       }
       _unknownFields = pb::UnknownFieldSet.MergeFrom(_unknownFields, other._unknownFields);
     }
@@ -314,6 +357,10 @@ namespace Protobuf {
             DataSize = input.ReadFixed32();
             break;
           }
+          case 34: {
+            ChannelId = input.ReadString();
+            break;
+          }
         }
       }
     #endif
@@ -339,6 +386,10 @@ namespace Protobuf {
           }
           case 29: {
             DataSize = input.ReadFixed32();
+            break;
+          }
+          case 34: {
+            ChannelId = input.ReadString();
             break;
           }
         }
