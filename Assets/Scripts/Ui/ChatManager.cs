@@ -12,9 +12,11 @@ public class ChatManager : MonoBehaviour, IPointerEnterHandler, IPointerExitHand
     public bool State_Active; //완전 활성화 상태 (사용자가 직접 채팅을 사용 중인 상태)
     public bool State_Inactive; //완전 비활성화 상태 (채팅창이 사용되지 않을 때)
     public bool State_Standby; // 대기 상태 (사용자가 채팅은 치지 않고 있지만 새로운 정보들이 들어가는 상태)
+    bool IsMouseOver;
 
     public Transform[] ChildObj;
 
+    public TMP_InputField ChatInputField;
 
     private float StansdBytime;
 
@@ -23,6 +25,7 @@ public class ChatManager : MonoBehaviour, IPointerEnterHandler, IPointerExitHand
         State_Active = false;
         State_Inactive = true;
         State_Standby = false;
+        IsMouseOver = false;
 
         ChildObj = new Transform[transform.childCount];
         for (int i = 0; i < transform.childCount; i++)
@@ -33,8 +36,8 @@ public class ChatManager : MonoBehaviour, IPointerEnterHandler, IPointerExitHand
             //Debug.Log(transform.GetChild(i));
         }
 
-
-
+        ChatInputField = GetComponentInChildren<TMP_InputField>();
+        //Debug.Log(ChatInputField);
 
         //ChatScreen = obj;
     }
@@ -44,14 +47,16 @@ public class ChatManager : MonoBehaviour, IPointerEnterHandler, IPointerExitHand
     {
         ChatState();
         InactiveTrigger(5);
-        Debug.Log(StansdBytime);
+        InputFieldTrigger();
+        //Debug.Log(StansdBytime);
     }
 
-
+    // 마우스가 UI로 올라갈 때 호출
     public void OnPointerEnter(PointerEventData eventData)
     {
         State_Active = true;
         State_Standby = false;
+        IsMouseOver = true;
     }
 
     // 마우스가 UI를 빠져나갈 때 호출
@@ -60,27 +65,55 @@ public class ChatManager : MonoBehaviour, IPointerEnterHandler, IPointerExitHand
         State_Standby = true;
         State_Active = false;
         StansdBytime = 0;
+        IsMouseOver = false;
     }
 
+    // 입력필드 활성화 시 변경점
+    void InputFieldTrigger()
+    {
+        //리턴 키(엔터) 입력시
+        if (Input.GetKey(KeyCode.Return))
+        {
+            //isFocused 활성화 <-> 비활성화
+            ChatInputField.Select();
+            //Debug.Log(ChatInputField.isFocused);
+        }
+
+        //isFocused시 채팅창 활성화 유지
+        if (ChatInputField.isFocused)
+        {
+            State_Standby = false;
+            State_Active = true;
+        }
+        //아니면 isFocused가 아니고 마우스오버 상태가 아닐때
+        else if (!ChatInputField.isFocused && !IsMouseOver && !State_Inactive)
+        {
+            State_Active = false;
+            State_Standby = true;
+        }
+
+    }
+
+    //비활성화 트리거
     void InactiveTrigger(float Inactivetime)
     {
         
-        Debug.Log(State_Standby);
+        //Debug.Log(State_Standby);
         if (State_Standby == true)
         {
             StansdBytime = StansdBytime + Time.deltaTime;
-            Debug.Log(StansdBytime);
+            //Debug.Log(StansdBytime);
         }
         if (StansdBytime > Inactivetime && State_Active != true)
         {
-            Debug.Log("TriggerOn");
-            State_Inactive = true;
+            //Debug.Log("TriggerOn");
             State_Standby = false;
+            State_Inactive = true;
             StansdBytime = 0;
         }
     }
 
-
+    //Chat UI 상태 구분
     void ChatState()
     {
         if (State_Active == true)
@@ -102,7 +135,7 @@ public class ChatManager : MonoBehaviour, IPointerEnterHandler, IPointerExitHand
         }
     }
 
-
+    // Chat UI 활성화
     void ChatActive(int AlphaVelue)
     {
         // childObj - 0 : ChatScreen 
@@ -158,20 +191,24 @@ public class ChatManager : MonoBehaviour, IPointerEnterHandler, IPointerExitHand
         // 채팅창 내 스크롤바
         Scrollbar ChatScrollbar;
         ChatScrollbar = ChildObj[0].GetComponentInChildren<Scrollbar>();
-        ColorBlock ChatScrollbaralpha;
-        ChatScrollbaralpha = ChatScrollbar.colors;
-        ChatScrollbaralpha.normalColor = new Color(ChatScrollbaralpha.normalColor.r, ChatScrollbaralpha.normalColor.g, ChatScrollbaralpha.normalColor.b, (AlphaVelue + 65) / 255f);
-        ChatScrollbar.colors = ChatScrollbaralpha;
-        //스크롤바 내 핸들러
-        Image ChatScrollbarImg = ChatScrollbar.GetComponent<Image>();
+        Image ChatScrollbarImg = ChatScrollbar.GetComponentsInChildren<Image>()[0];
         Color ChatScrollbarImgAlpha;
         ChatScrollbarImgAlpha = ChatScrollbarImg.color;
-        ChatScrollbarImgAlpha.a = (AlphaVelue + 65) / 255f;
+        ChatScrollbarImgAlpha.a = (AlphaVelue - 115) / 255f;
         ChatScrollbarImg.color = ChatScrollbarImgAlpha;
-        //Debug.Log(ChatScrollbar.GetComponent<Image>());
+
+        //스크롤바 내 핸들러
+        Image ChatScrollbarHandler;
+        ChatScrollbarHandler = ChatScrollbar.GetComponentsInChildren<Image>()[1];
+        Color ChatScrollbarHandleralpha;
+        ChatScrollbarHandleralpha = ChatScrollbarHandler.color;
+        ChatScrollbarHandleralpha.a = (AlphaVelue + 65) / 255f;
+        ChatScrollbarHandler.color = ChatScrollbarHandleralpha;
+        //Debug.Log(ChatScrollbarHandler);
         //Debug.Log(ChatScrollbar.colors.normalColor);
     }
 
+    // Chat UI 대기상태
     void ChatStandby(int AlphaVelue)
     {
         // childObj - 0 : ChatScreen 
@@ -225,20 +262,24 @@ public class ChatManager : MonoBehaviour, IPointerEnterHandler, IPointerExitHand
         // 채팅창 내 스크롤바
         Scrollbar ChatScrollbar;
         ChatScrollbar = ChildObj[0].GetComponentInChildren<Scrollbar>();
-        ColorBlock ChatScrollbaralpha;
-        ChatScrollbaralpha = ChatScrollbar.colors;
-        ChatScrollbaralpha.normalColor = new Color(ChatScrollbaralpha.normalColor.r, ChatScrollbaralpha.normalColor.g, ChatScrollbaralpha.normalColor.b, (AlphaVelue) / 255f);
-        ChatScrollbar.colors = ChatScrollbaralpha;
-        //스크롤바 내 핸들러
-        Image ChatScrollbarImg = ChatScrollbar.GetComponent<Image>();
+        Image ChatScrollbarImg = ChatScrollbar.GetComponentsInChildren<Image>()[0];
         Color ChatScrollbarImgAlpha;
         ChatScrollbarImgAlpha = ChatScrollbarImg.color;
-        ChatScrollbarImgAlpha.a = (AlphaVelue) / 255f;
+        ChatScrollbarImgAlpha.a = (AlphaVelue - 115) / 255f;
         ChatScrollbarImg.color = ChatScrollbarImgAlpha;
-        //Debug.Log(ChatScrollbar.GetComponent<Image>());
+
+        //스크롤바 내 핸들러
+        Image ChatScrollbarHandler;
+        ChatScrollbarHandler = ChatScrollbar.GetComponentsInChildren<Image>()[1];
+        Color ChatScrollbarHandleralpha;
+        ChatScrollbarHandleralpha = ChatScrollbarHandler.color;
+        ChatScrollbarHandleralpha.a = (AlphaVelue + 65) / 255f;
+        ChatScrollbarHandler.color = ChatScrollbarHandleralpha;
+        //Debug.Log(ChatScrollbarHandler);
         //Debug.Log(ChatScrollbar.colors.normalColor);
     }
 
+    // Chat UI 비활성화
     void ChatInactive(int AlphaVelue)
     {
         // childObj - 0 : ChatScreen 
@@ -293,19 +334,20 @@ public class ChatManager : MonoBehaviour, IPointerEnterHandler, IPointerExitHand
         // 채팅창 내 스크롤바
         Scrollbar ChatScrollbar;
         ChatScrollbar = ChildObj[0].GetComponentInChildren<Scrollbar>();
-        ColorBlock ChatScrollbaralpha;
-        ChatScrollbaralpha = ChatScrollbar.colors;
-        ChatScrollbaralpha.normalColor = new Color(ChatScrollbaralpha.normalColor.r, ChatScrollbaralpha.normalColor.g, ChatScrollbaralpha.normalColor.b, (AlphaVelue) / 255f);
-        ChatScrollbar.colors = ChatScrollbaralpha;
-        //스크롤바 내 핸들러
-        Image ChatScrollbarImg = ChatScrollbar.GetComponent<Image>();
+        Image ChatScrollbarImg = ChatScrollbar.GetComponentsInChildren<Image>()[0];
         Color ChatScrollbarImgAlpha;
         ChatScrollbarImgAlpha = ChatScrollbarImg.color;
         ChatScrollbarImgAlpha.a = (AlphaVelue) / 255f;
         ChatScrollbarImg.color = ChatScrollbarImgAlpha;
-        //Debug.Log(ChatScrollbar.GetComponent<Image>());
+
+        //스크롤바 내 핸들러
+        Image ChatScrollbarHandler;
+        ChatScrollbarHandler = ChatScrollbar.GetComponentsInChildren<Image>()[1];
+        Color ChatScrollbarHandleralpha;
+        ChatScrollbarHandleralpha = ChatScrollbarHandler.color;
+        ChatScrollbarHandleralpha.a = (AlphaVelue) / 255f;
+        ChatScrollbarHandler.color = ChatScrollbarHandleralpha;
+        //Debug.Log(ChatScrollbarHandler);
         //Debug.Log(ChatScrollbar.colors.normalColor);
     }
-
-
 }
