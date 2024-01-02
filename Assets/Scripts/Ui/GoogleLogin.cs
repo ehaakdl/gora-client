@@ -61,7 +61,8 @@ public class GoogleLogin : MonoBehaviour
 
         // Creates a redirect URI using an available port on the loopback address.
         //string redirectUri = $"http://{IPAddress.Loopback}:{GetRandomUnusedPort()}/";
-        string redirectUri = $"http://localhost:8080/oauth2/callback/google";
+        //string redirectUri = $"http://localhost:8080/oauth2/callback/google/";
+        string redirectUri = $"http://localhost:3000/";
         Log("redirect URI: " + redirectUri);
 
         // Creates an HttpListener to listen for requests on that redirect URI.
@@ -172,8 +173,10 @@ public class GoogleLogin : MonoBehaviour
                 Dictionary<string, string> tokenEndpointDecoded = JsonConvert.DeserializeObject<Dictionary<string, string>>(responseText);
 
                 string accessToken = tokenEndpointDecoded["access_token"];
+                string idToken = tokenEndpointDecoded["id_token"];
                 UserAuthRepository.Instance.accessToken = accessToken;
                 await RequestUserInfoAsync(accessToken);
+                //await GetBackendToken(idToken);
             }
         }
         catch (WebException ex)
@@ -224,26 +227,25 @@ public class GoogleLogin : MonoBehaviour
 
     private async Task GetBackendToken(string accessToken)
     {
-        Log("Making API Call to Userinfo...");
-
+        Log("GetBackEndToken Begin");
         // builds the  request
-        string getBackEndTokenUrl = "http://localhost:8080/api/v1/user/social/accessToken";
-
+        string getBackEndTokenUrl = $"http://localhost:8080/api/v1/user/social/accessToken?accessToken={accessToken}";
         // sends the request
-        HttpWebRequest userinfoRequest = (HttpWebRequest)WebRequest.Create(getBackEndTokenUrl);
-        userinfoRequest.Method = "GET";
-        userinfoRequest.Headers.Add(string.Format("Authorization: Bearer {0}", accessToken));
-        userinfoRequest.ContentType = "application/x-www-form-urlencoded";
-        userinfoRequest.Accept = "Accept=text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8";
+        HttpWebRequest backEndTokenRequest = (HttpWebRequest)WebRequest.Create(getBackEndTokenUrl);
+        backEndTokenRequest.Method = "GET";
+        //backEndTokenRequest.Headers.Add(string.Format("Authorization: Bearer {0}", accessToken));
+        //backEndTokenRequest.ContentType = "application/x-www-form-urlencoded";
+        //backEndTokenRequest.Accept = "Accept=text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8";
 
         // gets the response
-        WebResponse userinfoResponse = await userinfoRequest.GetResponseAsync();
+        WebResponse userinfoResponse = await backEndTokenRequest.GetResponseAsync();
         using (StreamReader userinfoResponseReader = new StreamReader(userinfoResponse.GetResponseStream()))
         {
             // reads response body
             string backEndTokenResponseText = await userinfoResponseReader.ReadToEndAsync();
             Log(backEndTokenResponseText);
         }
+        Log("GetBackEndToken End");
         //SetToken(accessToken);
     }
 
