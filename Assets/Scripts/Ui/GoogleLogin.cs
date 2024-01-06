@@ -60,14 +60,14 @@ public class GoogleLogin : MonoBehaviour
         const string codeChallengeMethod = "S256";
 
         // Creates a redirect URI using an available port on the loopback address.
-        //string redirectUri = $"http://{IPAddress.Loopback}:{GetRandomUnusedPort()}/";
-        //string redirectUri = $"http://localhost:8080/oauth2/callback/google/";
-        string redirectUri = $"http://localhost:3000/";
+        string redirectUri = $"http://{IPAddress.Loopback}:{GetRandomUnusedPort()}/";
+
         Log("redirect URI: " + redirectUri);
 
         // Creates an HttpListener to listen for requests on that redirect URI.
         var http = new HttpListener();
-        http.Prefixes.Add(redirectUri);
+        string httpServer = redirectUri;
+        http.Prefixes.Add(httpServer);
         Log("Listening..");
         http.Start();
 
