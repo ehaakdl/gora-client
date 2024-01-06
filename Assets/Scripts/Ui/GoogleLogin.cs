@@ -146,7 +146,8 @@ public class GoogleLogin : MonoBehaviour
             codeVerifier,
             clientSecret
             );
-
+        Log(tokenRequestUri);
+        Log(tokenRequestBody);
         // sends the request
         HttpWebRequest tokenRequest = (HttpWebRequest)WebRequest.Create(tokenRequestUri);
         tokenRequest.Method = "POST";
