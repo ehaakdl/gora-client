@@ -16,19 +16,8 @@ using UnityEngine.SceneManagement;
 
 public class GoogleLogin : MonoBehaviour
 {
-    // Start is called before the first frame update
-    void Start()
-    {
-        unityWindow = GetActiveWindow();
-        Debug.Log(unityWindow);
-    }
-
-    // Update is called once per frame
-    void Update()
-    {
-
-    }
-   
+    public string clientId;
+    public string clientSecret;
 
     const string AuthorizationEndpoint = "https://accounts.google.com/o/oauth2/v2/auth";
 
@@ -39,8 +28,6 @@ public class GoogleLogin : MonoBehaviour
         //    UnityEngine.Debug.Log("Required command line arguments: client-id client-secret");
         //    return 1;
         //}
-        string clientId = "361182045625-mn689vkqc2ukaavtg8l5q547gt5h9q1p.apps.googleusercontent.com";
-        string clientSecret = "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";
 
         UnityEngine.Debug.Log("+-----------------------+");
         UnityEngine.Debug.Log("|  Sign in with Google  |");
@@ -74,22 +61,23 @@ public class GoogleLogin : MonoBehaviour
 
         // Creates a redirect URI using an available port on the loopback address.
         string redirectUri = $"http://{IPAddress.Loopback}:{GetRandomUnusedPort()}/";
+
         Log("redirect URI: " + redirectUri);
 
         // Creates an HttpListener to listen for requests on that redirect URI.
         var http = new HttpListener();
-        http.Prefixes.Add(redirectUri);
+        string httpServer = redirectUri;
+        http.Prefixes.Add(httpServer);
         Log("Listening..");
         http.Start();
 
         // Creates the OAuth 2.0 authorization request.
-        string authorizationRequest = string.Format("{0}?response_type=code&scope=openid%20profile&redirect_uri={1}&client_id={2}&state={3}&code_challenge={4}&code_challenge_method={5}",
-            AuthorizationEndpoint,
-            Uri.EscapeDataString(redirectUri),
-            clientId,
-            state,
-            codeChallenge,
-            codeChallengeMethod);
+        string authorizationRequest = string.Format($"{AuthorizationEndpoint}?" +
+            $"response_type=code&scope=openid%20profile&redirect_uri={Uri.EscapeDataString(redirectUri)}&" +
+            $"client_id={clientId}&" +
+            $"state={state}&" +
+            $"code_challenge={codeChallenge}&" +
+            $"code_challenge_method={codeChallengeMethod}");
 
         // Opens request in the browser.
         Process.Start(authorizationRequest);
@@ -101,7 +89,7 @@ public class GoogleLogin : MonoBehaviour
         //var active = GetActiveWindow();
         //Debug.Log(active);
        
-        BringConsoleToFront();
+        //BringConsoleToFront();
 
         // Sends an HTTP response to the browser.
         var response = context.Response;
@@ -158,7 +146,8 @@ public class GoogleLogin : MonoBehaviour
             codeVerifier,
             clientSecret
             );
-
+        Log(tokenRequestUri);
+        Log(tokenRequestBody);
         // sends the request
         HttpWebRequest tokenRequest = (HttpWebRequest)WebRequest.Create(tokenRequestUri);
         tokenRequest.Method = "POST";
@@ -185,8 +174,10 @@ public class GoogleLogin : MonoBehaviour
                 Dictionary<string, string> tokenEndpointDecoded = JsonConvert.DeserializeObject<Dictionary<string, string>>(responseText);
 
                 string accessToken = tokenEndpointDecoded["access_token"];
+                string idToken = tokenEndpointDecoded["id_token"];
                 UserAuthRepository.Instance.accessToken = accessToken;
                 await RequestUserInfoAsync(accessToken);
+                //await GetBackendToken(idToken);
             }
         }
         catch (WebException ex)
@@ -232,9 +223,33 @@ public class GoogleLogin : MonoBehaviour
             Log(userinfoResponseText);
         }
         //SetToken(accessToken);
-
-
+        await GetBackendToken(accessToken);
     }
+
+    private async Task GetBackendToken(string accessToken)
+    {
+        Log("GetBackEndToken Begin");
+        // builds the  request
+        string getBackEndTokenUrl = $"http://localhost:8080/api/v1/user/social/accessToken?accessToken={accessToken}";
+        // sends the request
+        HttpWebRequest backEndTokenRequest = (HttpWebRequest)WebRequest.Create(getBackEndTokenUrl);
+        backEndTokenRequest.Method = "GET";
+        //backEndTokenRequest.Headers.Add(string.Format("Authorization: Bearer {0}", accessToken));
+        //backEndTokenRequest.ContentType = "application/x-www-form-urlencoded";
+        //backEndTokenRequest.Accept = "Accept=text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8";
+
+        // gets the response
+        WebResponse userinfoResponse = await backEndTokenRequest.GetResponseAsync();
+        using (StreamReader userinfoResponseReader = new StreamReader(userinfoResponse.GetResponseStream()))
+        {
+            // reads response body
+            string backEndTokenResponseText = await userinfoResponseReader.ReadToEndAsync();
+            Log(backEndTokenResponseText);
+        }
+        Log("GetBackEndToken End");
+        //SetToken(accessToken);
+    }
+
     private void SetToken(string token)
     {
         UserAuthRepository.Instance.accessToken = token;
@@ -296,34 +311,34 @@ public class GoogleLogin : MonoBehaviour
     // Hack to bring the Console window to front.
     // ref: http://stackoverflow.com/a/12066376
 
-    [DllImport("kernel32.dll", ExactSpelling = true)]
-    public static extern IntPtr GetConsoleWindow();
+    //[DllImport("kernel32.dll", ExactSpelling = true)]
+    //public static extern IntPtr GetConsoleWindow();
 
-    [DllImport("user32.dll")]
-    [return: MarshalAs(UnmanagedType.Bool)]
-    public static extern bool SetForegroundWindow(IntPtr hWnd);
+    //[DllImport("user32.dll")]
+    //[return: MarshalAs(UnmanagedType.Bool)]
+    //public static extern bool SetForegroundWindow(IntPtr hWnd);
 
-    [DllImport("user32.dll", EntryPoint="FindWindow", SetLastError = true)]
-    static extern IntPtr FindWindowByCaption(IntPtr zeroOnly, string lpWindowName);
-    [DllImport("user32.dll")]
-    public static extern IntPtr FindWindow(string className, string windowName);
-    public void BringConsoleToFront()
-    {
-        //var browser = GetActiveWindow();
-        //var b= ShowWindowAsync(browser, 0);
-        //Debug.Log(b);
-        var active = FindWindow(null, "gora-client");
-        ShowWindowAsync(active, 1);
-        SetForegroundWindow(unityWindow);
-        //SetForegroundWindow(active);
-    }
+    //[DllImport("user32.dll", EntryPoint="FindWindow", SetLastError = true)]
+    //static extern IntPtr FindWindowByCaption(IntPtr zeroOnly, string lpWindowName);
+    //[DllImport("user32.dll")]
+    //public static extern IntPtr FindWindow(string className, string windowName);
+    //public void BringConsoleToFront()
+    //{
+    //    //var browser = GetActiveWindow();
+    //    //var b= ShowWindowAsync(browser, 0);
+    //    //Debug.Log(b);
+    //    var active = FindWindow(null, "gora-client");
+    //    ShowWindowAsync(active, 1);
+    //    SetForegroundWindow(unityWindow);
+    //    //SetForegroundWindow(active);
+    //}
 
-    private IntPtr unityWindow;
-    [DllImport("user32.dll")]
-    static extern IntPtr GetActiveWindow();
+    //private IntPtr unityWindow;
+    //[DllImport("user32.dll")]
+    //static extern IntPtr GetActiveWindow();
 
-    [DllImport("user32.dll")]
-    private static extern bool ShowWindowAsync(IntPtr findname, int howShow);
+    //[DllImport("user32.dll")]
+    //private static extern bool ShowWindowAsync(IntPtr findname, int howShow);
 }
 // Copyright 2016 Google Inc.
 // 

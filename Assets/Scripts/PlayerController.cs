@@ -5,16 +5,20 @@ using UnityEngine;
 
 public class PlayerController : MonoBehaviour
 {
-
     private Animator animator;
 
     private ChatManager chatmanager;
-    GameObject ChatObj;
+    public GameObject ChatObj;
+
+    private Vector3 _clickPos = Vector3.zero;
+    private Camera _mainCam;
+
     void Start()
     {
         animator = GetComponent<Animator>();
         ChatObj = GameObject.Find("Chat");
         chatmanager = ChatObj.GetComponent<ChatManager>();
+        _mainCam = Camera.main;
     }
     public float speed = 2;
 
@@ -25,26 +29,42 @@ public class PlayerController : MonoBehaviour
         //Debug.Log(chatmanager.ChatInputField.isFocused);
         if (!chatmanager.ChatInputField.isFocused)
         {
-            float horizontalInput = Input.GetAxis("Horizontal");
-            float verticalInput = Input.GetAxis("Vertical");
-            var isMove = horizontalInput != 0 || verticalInput != 0;
-            animator.SetBool("IsMove", isMove);
-
-            if (!isMove) return;
-            animator.SetFloat("Horizontal", horizontalInput);
-            animator.SetFloat("Vertical", verticalInput);
-            transform.localScale = new Vector3(horizontalInput > 0 ? -1 : 1, 1);
-
-            Vector3 moveDirection = new Vector3(horizontalInput, verticalInput, 0f);
-            moveDirection = moveDirection.normalized;
-
-            transform.Translate(moveDirection * speed * Time.deltaTime);
+            if (Input.GetMouseButton(0))
+            {
+                _clickPos = _mainCam.ScreenToWorldPoint(Input.mousePosition);
+                _clickPos.z = 0;
+            }
+            MoveCharacter();
         }
         else
         {
             animator.SetBool("IsMove", false);
         }
 
+    }
+    void MoveCharacter()
+    {
+        var horizontalInput = Input.GetAxis("Horizontal");
+        var verticalInput = Input.GetAxis("Vertical");
+
+        if (horizontalInput != 0 || verticalInput != 0)
+        {
+            _clickPos = transform.position + new Vector3(horizontalInput, verticalInput, 0);
+        }
+
+        var moveDirection = _clickPos - transform.position;
+        var isMove = moveDirection.magnitude > 0.1f;
+
+        animator.SetBool("IsMove", isMove);
         
+        if (!isMove) return;
+
+        animator.SetFloat("Horizontal", moveDirection.x);
+        animator.SetFloat("Vertical", moveDirection.y);
+        transform.localScale = new Vector3(moveDirection.x > 0 ? -1 : 1, 1);
+
+        moveDirection = moveDirection.normalized;
+
+        transform.Translate(moveDirection * speed * Time.deltaTime);
     }
 }
