@@ -3,6 +3,7 @@ using System;
 using System.Net;
 using UnityEngine;
 using Google.Protobuf;
+using System.Collections.Generic;
 
 public class NetworkManager
 {
@@ -10,6 +11,9 @@ public class NetworkManager
     private UdpClient listenUdp = null;
     private UdpClient connectUdp = null;
     private static readonly Lazy<NetworkManager> instance = new Lazy<NetworkManager>(() => new NetworkManager());
+
+    private Queue<byte[]> tcpDataQueue = new Queue<byte[]>();
+
     public static NetworkManager Instance
     {
         get
@@ -70,8 +74,11 @@ public class NetworkManager
             int recvSize = clientTcpSocket.Receive(recvBuffer, NetworkUtils.TOTAL_MAX_SIZE, SocketFlags.None);
             NetworkBufferManager.Instance.AppendByTcp(recvBuffer);
 
+            EnqueueTcpData(recvBuffer);
+            Debug.Log(recvBuffer);
         }
     }
+
 
     void tcpIoCompleted(object sender, SocketAsyncEventArgs e)
     {
@@ -152,5 +159,26 @@ public class NetworkManager
         }
     }
 
+    private void EnqueueTcpData(byte[] data)
+    {
+        lock (tcpDataQueue)
+        {
+            tcpDataQueue.Enqueue(data);
+        }
+    }
 
+    public bool TryDequeueTcpData(out byte[] data)
+    {
+        lock (tcpDataQueue)
+        {
+            if (tcpDataQueue.Count > 0)
+            {
+                data = tcpDataQueue.Dequeue();
+                return true;
+            }
+        }
+
+        data = null;
+        return false;
+    }
 }
