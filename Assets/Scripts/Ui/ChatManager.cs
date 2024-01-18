@@ -20,6 +20,12 @@ public class ChatManager : MonoBehaviour, IPointerEnterHandler, IPointerExitHand
 
     private float StansdBytime;
 
+    //수신 채팅 배열
+    public List<GameObject> receivechatArr;
+    GameObject chatreceive;
+
+    GameObject ChatContent;
+
     void Start()
     {
         State_Active = false;
@@ -32,14 +38,17 @@ public class ChatManager : MonoBehaviour, IPointerEnterHandler, IPointerExitHand
         {
             transform.GetChild(i);
             ChildObj[i] = transform.GetChild(i);
-            //Debug.Log(transform.childCount);
-            //Debug.Log(transform.GetChild(i));
+            Debug.Log(transform.childCount);
+            Debug.Log(transform.GetChild(i));
         }
 
         ChatInputField = GetComponentInChildren<TMP_InputField>();
         //Debug.Log(ChatInputField);
 
         //ChatScreen = obj;
+        ChatContent = ChildObj[0].GetComponentInChildren<GridLayoutGroup>().gameObject;
+
+
     }
 
 
@@ -49,6 +58,11 @@ public class ChatManager : MonoBehaviour, IPointerEnterHandler, IPointerExitHand
         InactiveTrigger(5);
         InputFieldTrigger();
         //Debug.Log(StansdBytime);
+        if (Input.GetKeyDown(KeyCode.Return))
+        {
+            ChatReceiveArray("test");
+            ChatContentSize();
+        }
     }
 
     // 마우스가 UI로 올라갈 때 호출
@@ -97,7 +111,7 @@ public class ChatManager : MonoBehaviour, IPointerEnterHandler, IPointerExitHand
     //비활성화 트리거
     void InactiveTrigger(float Inactivetime)
     {
-        
+
         //Debug.Log(State_Standby);
         if (State_Standby == true)
         {
@@ -349,5 +363,29 @@ public class ChatManager : MonoBehaviour, IPointerEnterHandler, IPointerExitHand
         ChatScrollbarHandler.color = ChatScrollbarHandleralpha;
         //Debug.Log(ChatScrollbarHandler);
         //Debug.Log(ChatScrollbar.colors.normalColor);
+    }
+
+
+    // Chat Receive Array
+    void ChatReceiveArray(string receiveMsg)
+    {
+        chatreceive = Instantiate(ChildObj[0].GetComponentInChildren<TextMeshProUGUI>().gameObject, ChildObj[0].GetComponentInChildren<TextMeshProUGUI>().gameObject.GetComponentsInParent<Transform>()[1]);
+        chatreceive.GetComponent<TextMeshProUGUI>().text = receiveMsg;
+        receivechatArr.Add(chatreceive);
+    }
+
+    //채팅 뷰포트 컨텐츠 크기
+    void ChatContentSize()
+    {
+        RectTransform ContenteTr = ChatContent.GetComponent<RectTransform>();
+        if ((receivechatArr.Count) * 20 < 111.83)
+        {
+            ContenteTr.sizeDelta = new Vector2(ContenteTr.sizeDelta.x, 111.83f);
+        }
+        else
+        {
+            ContenteTr.sizeDelta = new Vector2(ContenteTr.sizeDelta.x, (receivechatArr.Count) * 20);
+            ChildObj[0].GetComponentInChildren<Scrollbar>().value = 0;
+        }
     }
 }

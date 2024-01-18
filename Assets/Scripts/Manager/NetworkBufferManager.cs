@@ -161,6 +161,8 @@ public class NetworkBufferManager
         }
 
         List<TransportData> transportDatas = AssemblePacket(NetworkProtocolType.udp);
+
+        int a = 1;
     }
 
 }

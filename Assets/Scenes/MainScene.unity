@@ -206,8 +206,8 @@ MonoBehaviour:
   m_TargetGraphic: {fileID: 618512850}
   m_HandleRect: {fileID: 618512849}
   m_Direction: 2
-  m_Value: 0.9999998
-  m_Size: 0.37275836
+  m_Value: -0.021406727
+  m_Size: 0.9999777
   m_NumberOfSteps: 0
   m_OnValueChanged:
     m_PersistentCalls:
@@ -735,7 +735,7 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0, y: 0}
   m_AnchorMax: {x: 0, y: 0}
-  m_AnchoredPosition: {x: 16.847168, y: 13.801285}
+  m_AnchoredPosition: {x: 16.847168, y: 13.80127}
   m_SizeDelta: {x: 282.2235, y: 134.1591}
   m_Pivot: {x: 0, y: 0}
 --- !u!114 &470816532
@@ -793,6 +793,8 @@ MonoBehaviour:
   State_Standby: 0
   ChildObj: []
   ChatInputField: {fileID: 0}
+  receivechatArr:
+  - {fileID: 1678516124}
 --- !u!114 &470816535
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -1147,6 +1149,7 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 773165453}
+  - component: {fileID: 773165454}
   m_Layer: 5
   m_Name: Content
   m_TagString: Untagged
@@ -1165,15 +1168,40 @@ RectTransform:
   m_LocalPosition: {x: 0, y: 0, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
-  m_Children: []
+  m_Children:
+  - {fileID: 1678516125}
   m_Father: {fileID: 1101118673}
   m_RootOrder: 0
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
-  m_AnchorMin: {x: 0, y: 1}
-  m_AnchorMax: {x: 1, y: 1}
-  m_AnchoredPosition: {x: 0, y: 0.000030517578}
-  m_SizeDelta: {x: 0, y: 300}
+  m_AnchorMin: {x: 0, y: 0}
+  m_AnchorMax: {x: 1, y: 0}
+  m_AnchoredPosition: {x: 0, y: 111.830055}
+  m_SizeDelta: {x: 0, y: 111.83}
   m_Pivot: {x: 0, y: 1}
+--- !u!114 &773165454
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 773165452}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 8a8695521f0d02e499659fee002a26c2, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  m_Padding:
+    m_Left: 0
+    m_Right: 0
+    m_Top: 0
+    m_Bottom: 0
+  m_ChildAlignment: 6
+  m_StartCorner: 0
+  m_StartAxis: 1
+  m_CellSize: {x: 275, y: 20}
+  m_Spacing: {x: 0, y: 0}
+  m_Constraint: 0
+  m_ConstraintCount: 20
 --- !u!1 &821474771
 GameObject:
   m_ObjectHideFlags: 0
@@ -3891,7 +3919,6 @@ RectTransform:
   m_ConstrainProportionsScale: 0
   m_Children:
   - {fileID: 773165453}
-  - {fileID: 1678516125}
   m_Father: {fileID: 1230936950}
   m_RootOrder: 0
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
@@ -4005,7 +4032,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   m_Content: {fileID: 773165453}
-  m_Horizontal: 1
+  m_Horizontal: 0
   m_Vertical: 1
   m_MovementType: 1
   m_Elasticity: 0.1
@@ -4016,7 +4043,7 @@ MonoBehaviour:
   m_HorizontalScrollbar: {fileID: 0}
   m_VerticalScrollbar: {fileID: 15798475}
   m_HorizontalScrollbarVisibility: 2
-  m_VerticalScrollbarVisibility: 2
+  m_VerticalScrollbarVisibility: 0
   m_HorizontalScrollbarSpacing: -3
   m_VerticalScrollbarSpacing: -3
   m_OnValueChanged:
@@ -4274,7 +4301,7 @@ GameObject:
   - component: {fileID: 1678516127}
   - component: {fileID: 1678516126}
   m_Layer: 5
-  m_Name: Text (TMP)
+  m_Name: ChatText
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -4287,18 +4314,18 @@ RectTransform:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1678516124}
-  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
   m_LocalPosition: {x: 0, y: 0, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
-  m_Father: {fileID: 1101118673}
-  m_RootOrder: 1
+  m_Father: {fileID: 773165453}
+  m_RootOrder: 0
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0, y: 0}
-  m_AnchorMax: {x: 1, y: 1}
-  m_AnchoredPosition: {x: 1.8399963, y: 1.5269775}
-  m_SizeDelta: {x: -3.399994, y: -4.0245056}
+  m_AnchorMax: {x: 0, y: 0}
+  m_AnchoredPosition: {x: 0, y: 0}
+  m_SizeDelta: {x: 0, y: 0}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!114 &1678516126
 MonoBehaviour:
@@ -4356,7 +4383,7 @@ MonoBehaviour:
   m_fontSizeMax: 72
   m_fontStyle: 0
   m_HorizontalAlignment: 1
-  m_VerticalAlignment: 1024
+  m_VerticalAlignment: 512
   m_textAlignment: 65535
   m_characterSpacing: 0
   m_wordSpacing: 0
@@ -4384,7 +4411,7 @@ MonoBehaviour:
   m_VertexBufferAutoSizeReduction: 0
   m_useMaxVisibleDescender: 1
   m_pageToDisplay: 1
-  m_margin: {x: 0, y: 0, z: 0, w: 0}
+  m_margin: {x: 3.6707458, y: -0.016063461, z: -0.7077408, w: 0}
   m_isUsingLegacyAnimationComponent: 0
   m_isVolumetricText: 0
   m_hasFontAssetChanged: 0
