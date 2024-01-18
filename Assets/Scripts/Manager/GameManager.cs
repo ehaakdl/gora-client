@@ -1,6 +1,7 @@
 using UnityEngine;
 using System.Threading;
 using UnityEngine.SceneManagement;
+using System;
 
 public class GameManager : MonoBehaviour
 {
@@ -11,7 +12,8 @@ public class GameManager : MonoBehaviour
     private Thread networkudpRecvThread;
     private Thread healthCheckManagerThread;
     public static bool isQuit = false;
-    
+
+
 
     public static GameManager Instance
     {
@@ -37,6 +39,7 @@ public class GameManager : MonoBehaviour
             NetworkManager.Instance.ConnectTcp();
             NetworkManager.Instance.ListenUdp();
             NetworkManager.Instance.ConnectUdp();
+
 
             networkDispatcherThread = new Thread(NetworkDispatcher.Instance.Dispatcher);
             networkDispatcherThread.Start();
@@ -64,7 +67,8 @@ public class GameManager : MonoBehaviour
         }
 
     }
-    
+
+
     // Start is called before the first frame update
     void Start()
     {

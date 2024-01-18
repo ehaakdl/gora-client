@@ -147,6 +147,7 @@ public class NetworkBufferManager
         List<TransportData> transportDatas = AssemblePacket(NetworkProtocolType.tcp);
         Test test = Test.Parser.ParseFrom(transportDatas[0].data);
         string recvMsgByServer= Encoding.Default.GetString(test.Msg.ToByteArray());
+        Debug.WriteLine(transportDatas[0].data);
     }
 
     public void AppendByUdp(byte[] buffer)
