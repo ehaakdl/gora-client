@@ -1,18 +1,16 @@
 ﻿
 using System;
 using System.Collections.Generic;
-using System.Linq;
 using System.Net;
 using System.Net.Sockets;
 using Google.Protobuf;
 using NetowrkServiceType;
 using Protobuf;
-using static UnityEngine.GraphicsBuffer;
 
 class NetworkUtils
 {
     public const byte PAD = 0; // 패딩 바이트 값 설정
-    public const int DATA_MAX_SIZE = 1421;
+    public const int DATA_MAX_SIZE = 1377;
     public static int TOTAL_MAX_SIZE = 1500;
     public static string UDP_EMPTY_CHANNEL_ID = "0000000000000000000000000000000000000000000000000000000000000000";
 
@@ -36,20 +34,27 @@ class NetworkUtils
         }
     }
 
-    public static byte[]? RemovePadding(byte[] target, int paddingSize)
+    public static byte[] RemovePadding(byte[] target, int paddingSize)
     {
-        if (target.Length < paddingSize)
+        if (paddingSize <= 0)
         {
-            throw new InvalidOperationException("Target array is smaller than padding size.");
+            return target;
+        }
+        else if (target.Length < paddingSize)
+        {
+            throw new Exception("Padding size is greater than the length of the target array.");
         }
         else if (target.Length == paddingSize)
         {
-            return null;
+            return target;
         }
 
-        int newSize = target.Length - paddingSize;
-        return target.Take(newSize).ToArray();
+        int lastLength = target.Length - paddingSize;
+        byte[] result = new byte[lastLength];
+        Array.Copy(target, 0, result, 0, lastLength);
+        return result;
     }
+
     public static byte[] AddPadding(byte[]? original, int blockSize)
     {
         if (original == null)
@@ -68,81 +73,162 @@ class NetworkUtils
 
         return padded;
     }
-    public static string GetIdentify()
+    public static string GenerateIdentify()
     {
         Guid uuid = Guid.NewGuid();
         string uuidString = uuid.ToString().Replace("-", "");
-        DateTime now = DateTime.Now;
-        int milliseconds = now.Millisecond;
         return new string(uuidString);
     }
 
-    public static NetworkPacket GetPacket(byte[] target, EServiceType type)
+    //public static NetworkPacket GetPacket(byte[] target, EServiceType type)
+    //{
+    //    if (target == null)
+    //    {
+    //        return null;
+    //    }
+
+    //    int dataSize = target.Length;
+    //    if (dataSize >= DATA_MAX_SIZE)
+    //    {
+    //        throw new Exception();
+    //    }
+
+    //    int paddingSize;
+    //    if (dataSize < DATA_MAX_SIZE)
+    //    {
+    //        paddingSize = DATA_MAX_SIZE - dataSize;
+    //    }
+    //    else
+    //    {
+    //        paddingSize = 0;
+    //    }
+
+    //    if (paddingSize > 0)
+    //    {
+    //        target = AddPadding(target, paddingSize);
+    //    }
+
+    //    if (target.Length != DATA_MAX_SIZE)
+    //    {
+    //        throw new Exception();
+    //    }
+    //    return new NetworkPacket
+    //    {
+
+    //        Data = ByteString.CopyFrom(target),
+    //        ChannelId = UDP_EMPTY_CHANNEL_ID,
+    //        DataSize = (uint)dataSize,
+    //        Type = (uint)type,
+    //    };
+    //}
+
+
+    public static NetworkPacket GetEmptyData(EServiceType type)
+    {
+        byte[] newBytes = AddPadding(null, DATA_MAX_SIZE);
+        return new NetworkPacket
+        {
+            Data = ByteString.CopyFrom(newBytes),
+            Sequence = 0,
+            Identify = GenerateIdentify(),
+            DataSize = 0,
+            TotalSize = 0,
+            ChannelId = UDP_EMPTY_CHANNEL_ID,
+            Type = (uint)type,
+        };
+    }
+
+    public static NetworkPacket GetEmptyData(EServiceType type, string udpChannelId)
+    {
+        byte[] newBytes = AddPadding(null, DATA_MAX_SIZE);
+        return new NetworkPacket
+        {
+            Data = ByteString.CopyFrom(newBytes),
+            Sequence = 0,
+            Identify = GenerateIdentify(),
+            DataSize = 0,
+            TotalSize = 0,
+            ChannelId = udpChannelId,
+
+            Type = (uint)type,
+        };
+    }
+
+    private static int CalcPaddingSize(int totalSize)
+    {
+        int paddingSize;
+        if (totalSize < DATA_MAX_SIZE)
+        {
+            paddingSize = DATA_MAX_SIZE - totalSize;
+        }
+        else
+        {
+            paddingSize = totalSize % DATA_MAX_SIZE > 0 ?
+                DATA_MAX_SIZE - totalSize % DATA_MAX_SIZE :
+                totalSize % DATA_MAX_SIZE;
+        }
+
+        return paddingSize;
+    }
+
+    private static NetworkPacket CreateNetworkPacket(byte[] data, int dataSize, int totalSize, string identify,
+            string udpChannelId, int sequence, EServiceType serviceType)
+    {
+        return new NetworkPacket
+        {
+            Data = ByteString.CopyFrom(data),
+            DataSize = (uint)dataSize,
+            TotalSize = (uint)totalSize,
+            Type = (uint)serviceType,
+            ChannelId = udpChannelId,
+            Sequence = (uint)sequence,
+            Identify = identify
+
+        };
+    }
+    
+    private static List<NetworkPacket> MakePackets(byte[] target, int paddingSize, EServiceType type, int totalSize,
+        string identify, string udpChannelId)
+    {
+        int segmentTotalCount = target.Length / DATA_MAX_SIZE;
+        int srcPos = 0;
+
+        int dataSize = DATA_MAX_SIZE;
+        int sequence = 0;
+        byte[] copyBytes;
+        List<NetworkPacket> result = new();
+        for (int index = 0; index < segmentTotalCount; index++)
+        {
+            if (index == segmentTotalCount - 1)
+            {
+                dataSize = DATA_MAX_SIZE - paddingSize;
+            }
+            copyBytes = new byte[DATA_MAX_SIZE];
+            Array.Copy(target, srcPos, copyBytes, 0, DATA_MAX_SIZE);
+            NetworkPacket packet = CreateNetworkPacket(copyBytes, dataSize, totalSize, identify, udpChannelId,
+                    sequence++, type);
+
+            result.Add(packet);
+            srcPos += DATA_MAX_SIZE;
+        }
+
+        return result;
+    }
+
+    public static List<NetworkPacket> GenerateSegmentPacket(byte[] target, EServiceType type,
+        string identify, int totalSize, string udpChannelId)
     {
         if (target == null)
         {
             return null;
         }
 
-        int dataSize = target.Length;
-        if (dataSize >= DATA_MAX_SIZE)
-        {
-            throw new Exception();
-        }
-
-        int paddingSize;
-        if (dataSize < DATA_MAX_SIZE)
-        {
-            paddingSize = DATA_MAX_SIZE - dataSize;
-        }
-        else
-        {
-            paddingSize = 0;
-        }
-
+        int paddingSize = CalcPaddingSize(totalSize);
         if (paddingSize > 0)
         {
             target = AddPadding(target, paddingSize);
         }
 
-        if (target.Length != DATA_MAX_SIZE)
-        {
-            throw new Exception();
-        }
-        return new NetworkPacket
-        {
-
-            Data = ByteString.CopyFrom(target),
-            ChannelId = UDP_EMPTY_CHANNEL_ID,
-            DataSize = (uint)dataSize,
-            Type = (uint)type,
-        };
-    }
-
-
-    public static NetworkPacket GetEmptyData(EServiceType type)
-    {
-        byte[] newBytes = AddPadding(null, NetworkUtils.DATA_MAX_SIZE);
-        return new NetworkPacket
-        {
-
-            Data = ByteString.CopyFrom(newBytes),
-            ChannelId = UDP_EMPTY_CHANNEL_ID,
-            DataSize = (uint)0,
-            Type = (uint)type,
-        };
-    }
-
-    public static NetworkPacket GetEmptyData(EServiceType type, String udpChannelId)
-    {
-        byte[] newBytes = AddPadding(null, DATA_MAX_SIZE);
-        return new NetworkPacket
-        {
-
-            Data = ByteString.CopyFrom(newBytes),
-            ChannelId = udpChannelId,
-            DataSize = (uint)0,
-            Type = (uint)type,
-        };
+        return MakePackets(target, paddingSize, type, totalSize, identify, udpChannelId);
     }
 }

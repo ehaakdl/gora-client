@@ -11,7 +11,7 @@ using NetowrkServiceType;
 
 public class Chatsystem : MonoBehaviour
 {
-    //서버 메세지 디코더에 브레이크 걸면 잡힘
+    //???? ?????? ???????? ???????? ???? ????
     private NetworkManager networkmanager;
     private NetworkInfo networkinfo;
 
@@ -59,7 +59,11 @@ public class Chatsystem : MonoBehaviour
 
         Test sendmessege = new Test { Msg = bytesrting };
         Debug.Log(bytesrting);
-        NetworkPacket packet = NetworkUtils.GetPacket(sendmessege.ToByteArray(), type);
-        return packet;
+        byte[] data = sendmessege.ToByteArray();
+        string identify = NetworkUtils.GenerateIdentify();
+        List<NetworkPacket> packets = NetworkUtils.GenerateSegmentPacket(data, type, identify, data.Length, NetworkUtils.UDP_EMPTY_CHANNEL_ID);
+        // ?? ???? 1500??? ???? ??? ???? ????
+        Debug.Log(packets[0].GetType());
+        return packets[0];
     }
 }

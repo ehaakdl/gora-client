@@ -25,22 +25,20 @@ namespace Protobuf {
       byte[] descriptorData = global::System.Convert.FromBase64String(
           string.Concat(
             "Cg1DaGF0TXNnLnByb3RvEghwcm90b2J1ZiI0CgdNc2dJbmZvEgoKAnRvGAIg",
-            "AigJEgsKA21zZxgDIAIoCRIQCghzZW5kVHlwZRgEIAIoByJOCgRDaGF0EhMK",
-            "C2FjY2Vzc1Rva2VuGAEgASgJEhAKCGlkZW50aWZ5GAIgAigJEhEKCXRvdGFs",
-            "U2l6ZRgDIAIoBxIMCgRkYXRhGAQgAigMQi0KHW9yZy5nb3JhLnNlcnZlci5t",
-            "b2RlbC5uZXR3b3JrQgxDaGF0UHJvdG9CdWY="));
+            "AigJEgsKA21zZxgDIAIoCRIQCghzZW5kVHlwZRgEIAIoByIpCgRDaGF0EhMK",
+            "C2FjY2Vzc1Rva2VuGAEgASgJEgwKBGRhdGEYBCACKAxCLQodb3JnLmdvcmEu",
+            "c2VydmVyLm1vZGVsLm5ldHdvcmtCDENoYXRQcm90b0J1Zg=="));
       descriptor = pbr::FileDescriptor.FromGeneratedCode(descriptorData,
           new pbr::FileDescriptor[] { },
           new pbr::GeneratedClrTypeInfo(null, null, new pbr::GeneratedClrTypeInfo[] {
             new pbr::GeneratedClrTypeInfo(typeof(global::Protobuf.MsgInfo), global::Protobuf.MsgInfo.Parser, new[]{ "To", "Msg", "SendType" }, null, null, null, null),
-            new pbr::GeneratedClrTypeInfo(typeof(global::Protobuf.Chat), global::Protobuf.Chat.Parser, new[]{ "AccessToken", "Identify", "TotalSize", "Data" }, null, null, null, null)
+            new pbr::GeneratedClrTypeInfo(typeof(global::Protobuf.Chat), global::Protobuf.Chat.Parser, new[]{ "AccessToken", "Data" }, null, null, null, null)
           }));
     }
     #endregion
 
   }
   #region Messages
-  [global::System.Diagnostics.DebuggerDisplayAttribute("{ToString(),nq}")]
   public sealed partial class MsgInfo : pb::IMessage<MsgInfo>
   #if !GOOGLE_PROTOBUF_REFSTRUCT_COMPATIBILITY_MODE
       , pb::IBufferMessage
@@ -349,7 +347,6 @@ namespace Protobuf {
 
   }
 
-  [global::System.Diagnostics.DebuggerDisplayAttribute("{ToString(),nq}")]
   public sealed partial class Chat : pb::IMessage<Chat>
   #if !GOOGLE_PROTOBUF_REFSTRUCT_COMPATIBILITY_MODE
       , pb::IBufferMessage
@@ -357,7 +354,6 @@ namespace Protobuf {
   {
     private static readonly pb::MessageParser<Chat> _parser = new pb::MessageParser<Chat>(() => new Chat());
     private pb::UnknownFieldSet _unknownFields;
-    private int _hasBits0;
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
     [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
     public static pb::MessageParser<Chat> Parser { get { return _parser; } }
@@ -385,10 +381,7 @@ namespace Protobuf {
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
     [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
     public Chat(Chat other) : this() {
-      _hasBits0 = other._hasBits0;
       accessToken_ = other.accessToken_;
-      identify_ = other.identify_;
-      totalSize_ = other.totalSize_;
       data_ = other.data_;
       _unknownFields = pb::UnknownFieldSet.Clone(other._unknownFields);
     }
@@ -423,59 +416,6 @@ namespace Protobuf {
     [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
     public void ClearAccessToken() {
       accessToken_ = null;
-    }
-
-    /// <summary>Field number for the "identify" field.</summary>
-    public const int IdentifyFieldNumber = 2;
-    private readonly static string IdentifyDefaultValue = "";
-
-    private string identify_;
-    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
-    [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
-    public string Identify {
-      get { return identify_ ?? IdentifyDefaultValue; }
-      set {
-        identify_ = pb::ProtoPreconditions.CheckNotNull(value, "value");
-      }
-    }
-    /// <summary>Gets whether the "identify" field is set</summary>
-    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
-    [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
-    public bool HasIdentify {
-      get { return identify_ != null; }
-    }
-    /// <summary>Clears the value of the "identify" field</summary>
-    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
-    [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
-    public void ClearIdentify() {
-      identify_ = null;
-    }
-
-    /// <summary>Field number for the "totalSize" field.</summary>
-    public const int TotalSizeFieldNumber = 3;
-    private readonly static uint TotalSizeDefaultValue = 0;
-
-    private uint totalSize_;
-    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
-    [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
-    public uint TotalSize {
-      get { if ((_hasBits0 & 1) != 0) { return totalSize_; } else { return TotalSizeDefaultValue; } }
-      set {
-        _hasBits0 |= 1;
-        totalSize_ = value;
-      }
-    }
-    /// <summary>Gets whether the "totalSize" field is set</summary>
-    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
-    [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
-    public bool HasTotalSize {
-      get { return (_hasBits0 & 1) != 0; }
-    }
-    /// <summary>Clears the value of the "totalSize" field</summary>
-    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
-    [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
-    public void ClearTotalSize() {
-      _hasBits0 &= ~1;
     }
 
     /// <summary>Field number for the "data" field.</summary>
@@ -520,8 +460,6 @@ namespace Protobuf {
         return true;
       }
       if (AccessToken != other.AccessToken) return false;
-      if (Identify != other.Identify) return false;
-      if (TotalSize != other.TotalSize) return false;
       if (Data != other.Data) return false;
       return Equals(_unknownFields, other._unknownFields);
     }
@@ -531,8 +469,6 @@ namespace Protobuf {
     public override int GetHashCode() {
       int hash = 1;
       if (HasAccessToken) hash ^= AccessToken.GetHashCode();
-      if (HasIdentify) hash ^= Identify.GetHashCode();
-      if (HasTotalSize) hash ^= TotalSize.GetHashCode();
       if (HasData) hash ^= Data.GetHashCode();
       if (_unknownFields != null) {
         hash ^= _unknownFields.GetHashCode();
@@ -556,14 +492,6 @@ namespace Protobuf {
         output.WriteRawTag(10);
         output.WriteString(AccessToken);
       }
-      if (HasIdentify) {
-        output.WriteRawTag(18);
-        output.WriteString(Identify);
-      }
-      if (HasTotalSize) {
-        output.WriteRawTag(29);
-        output.WriteFixed32(TotalSize);
-      }
       if (HasData) {
         output.WriteRawTag(34);
         output.WriteBytes(Data);
@@ -582,14 +510,6 @@ namespace Protobuf {
         output.WriteRawTag(10);
         output.WriteString(AccessToken);
       }
-      if (HasIdentify) {
-        output.WriteRawTag(18);
-        output.WriteString(Identify);
-      }
-      if (HasTotalSize) {
-        output.WriteRawTag(29);
-        output.WriteFixed32(TotalSize);
-      }
       if (HasData) {
         output.WriteRawTag(34);
         output.WriteBytes(Data);
@@ -606,12 +526,6 @@ namespace Protobuf {
       int size = 0;
       if (HasAccessToken) {
         size += 1 + pb::CodedOutputStream.ComputeStringSize(AccessToken);
-      }
-      if (HasIdentify) {
-        size += 1 + pb::CodedOutputStream.ComputeStringSize(Identify);
-      }
-      if (HasTotalSize) {
-        size += 1 + 4;
       }
       if (HasData) {
         size += 1 + pb::CodedOutputStream.ComputeBytesSize(Data);
@@ -630,12 +544,6 @@ namespace Protobuf {
       }
       if (other.HasAccessToken) {
         AccessToken = other.AccessToken;
-      }
-      if (other.HasIdentify) {
-        Identify = other.Identify;
-      }
-      if (other.HasTotalSize) {
-        TotalSize = other.TotalSize;
       }
       if (other.HasData) {
         Data = other.Data;
@@ -659,14 +567,6 @@ namespace Protobuf {
             AccessToken = input.ReadString();
             break;
           }
-          case 18: {
-            Identify = input.ReadString();
-            break;
-          }
-          case 29: {
-            TotalSize = input.ReadFixed32();
-            break;
-          }
           case 34: {
             Data = input.ReadBytes();
             break;
@@ -688,14 +588,6 @@ namespace Protobuf {
             break;
           case 10: {
             AccessToken = input.ReadString();
-            break;
-          }
-          case 18: {
-            Identify = input.ReadString();
-            break;
-          }
-          case 29: {
-            TotalSize = input.ReadFixed32();
             break;
           }
           case 34: {
