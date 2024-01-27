@@ -102,7 +102,7 @@ public class NetworkBufferManager
                 buffer.Read(convertBytes);
                 packets.Add(NetworkPacket.Parser.ParseFrom(convertBytes));
             }
-
+            // 남은 바이트는 새로 메모리 바이트 배열에 append
             if (remainRecvByte > 0)
             {
                 byte[] remainBytes = new byte[remainRecvByte];
@@ -111,10 +111,12 @@ public class NetworkBufferManager
                 if (networkType == NetworkProtocolType.tcp)
                 {
                     TcpBuffer = new MemoryStream();
+                    TcpBuffer.Write(remainBytes);
                 }
                 else
                 {
                     UdpBuffer = new MemoryStream();
+                    UdpBuffer.Write(remainBytes);
                 }
             }
             else
