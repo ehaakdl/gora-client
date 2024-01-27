@@ -80,49 +80,6 @@ class NetworkUtils
         return new string(uuidString);
     }
 
-    //public static NetworkPacket GetPacket(byte[] target, EServiceType type)
-    //{
-    //    if (target == null)
-    //    {
-    //        return null;
-    //    }
-
-    //    int dataSize = target.Length;
-    //    if (dataSize >= DATA_MAX_SIZE)
-    //    {
-    //        throw new Exception();
-    //    }
-
-    //    int paddingSize;
-    //    if (dataSize < DATA_MAX_SIZE)
-    //    {
-    //        paddingSize = DATA_MAX_SIZE - dataSize;
-    //    }
-    //    else
-    //    {
-    //        paddingSize = 0;
-    //    }
-
-    //    if (paddingSize > 0)
-    //    {
-    //        target = AddPadding(target, paddingSize);
-    //    }
-
-    //    if (target.Length != DATA_MAX_SIZE)
-    //    {
-    //        throw new Exception();
-    //    }
-    //    return new NetworkPacket
-    //    {
-
-    //        Data = ByteString.CopyFrom(target),
-    //        ChannelId = UDP_EMPTY_CHANNEL_ID,
-    //        DataSize = (uint)dataSize,
-    //        Type = (uint)type,
-    //    };
-    //}
-
-
     public static NetworkPacket GetEmptyData(EServiceType type)
     {
         byte[] newBytes = AddPadding(null, DATA_MAX_SIZE);
