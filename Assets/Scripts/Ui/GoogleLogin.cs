@@ -71,9 +71,11 @@ public class GoogleLogin : MonoBehaviour
         Log("Listening..");
         http.Start();
 
-        // Creates the OAuth 2.0 authorization request.
+    // Creates the OAuth 2.0 authorization request.
+    //scope 액세스 토큰으로 어디까지 정보 획득할수 있는지 정할수 있음
+    //https://developers.google.com/identity/protocols/oauth2/scopes?hl=ko
         string authorizationRequest = string.Format($"{AuthorizationEndpoint}?" +
-            $"response_type=code&scope=openid%20profile&redirect_uri={Uri.EscapeDataString(redirectUri)}&" +
+            $"response_type=code&scope=email%20openid%20profile&redirect_uri={Uri.EscapeDataString(redirectUri)}&" +
             $"client_id={clientId}&" +
             $"state={state}&" +
             $"code_challenge={codeChallenge}&" +
