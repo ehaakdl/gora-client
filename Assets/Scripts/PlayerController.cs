@@ -7,7 +7,7 @@ public class PlayerController : MonoBehaviour
 {
     private Animator animator;
 
-    private ChatManager chatmanager;
+    private Chatsystem chatsystem;
     public GameObject ChatObj;
 
     private Vector3 _clickPos = Vector3.zero;
@@ -17,7 +17,7 @@ public class PlayerController : MonoBehaviour
     {
         animator = GetComponent<Animator>();
         ChatObj = GameObject.Find("Chat");
-        chatmanager = ChatObj.GetComponent<ChatManager>();
+        chatsystem = ChatObj.GetComponent<Chatsystem>();
         _mainCam = Camera.main;
     }
     public float speed = 2;
@@ -27,7 +27,7 @@ public class PlayerController : MonoBehaviour
         //Debug.Log(chatmanager);
         //Debug.Log(chatmanager.ChatInputField);
         //Debug.Log(chatmanager.ChatInputField.isFocused);
-        if (!chatmanager.ChatInputField.isFocused)
+        if (!chatsystem.ChatInputField.isFocused)
         {
             if (Input.GetMouseButton(0))
             {
