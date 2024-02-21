@@ -15,6 +15,8 @@ public class NetworkBufferManager
 {
 
     private static readonly Lazy<NetworkBufferManager> instance = new Lazy<NetworkBufferManager>(() => new NetworkBufferManager());
+    private Queue<List<TransportData>> tcpDataQueue = new Queue<List<TransportData>>();
+
     public static NetworkBufferManager Instance
     {
         get
@@ -178,6 +180,9 @@ public class NetworkBufferManager
             TcpBuffer.Write(buffer);
         }
         List<TransportData> transportDatas = AssemblePacket(NetworkProtocolType.tcp);
+
+
+        EnqueueTcpData(transportDatas);
         //sample code: 서비스 타입 보고 캐스팅만 하면 클래스로 바꿀 수 있게 셋팅해두었습니다.
         //NetworkDispatcher 에서 List<TransportDat> 이 데이터를 큐에 넣어주세요.
         //NetworkDispatcher 에서 while문으로 서비스 타입 체크하고 캐스팅 시키고 각각의 서비스 라우팅 시키면 됩니다.
@@ -205,6 +210,29 @@ public class NetworkBufferManager
         List<TransportData> transportDatas = AssemblePacket(NetworkProtocolType.udp);
 
         int a = 1;
+    }
+
+    private void EnqueueTcpData(List<TransportData> data)
+    {
+        lock (tcpDataQueue)
+        {
+            tcpDataQueue.Enqueue(data);
+        }
+    }
+
+    public bool TryDequeueTcpData(out List<TransportData> data)
+    {
+        lock (tcpDataQueue)
+        {
+            if (tcpDataQueue.Count > 0)
+            {
+                data = tcpDataQueue.Dequeue();
+                return true;
+            }
+        }
+
+        data = null;
+        return false;
     }
 
 }

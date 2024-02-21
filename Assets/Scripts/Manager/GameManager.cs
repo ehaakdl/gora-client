@@ -44,6 +44,7 @@ public class GameManager : MonoBehaviour
             networkDispatcherThread = new Thread(NetworkDispatcher.Instance.Dispatcher);
             networkDispatcherThread.Start();
 
+
             networkTcpRecvThread = new Thread(NetworkManager.Instance.RecvTcp);
             networkTcpRecvThread.Start();
 
