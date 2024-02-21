@@ -9,9 +9,11 @@ using UnityEngine.UI;
 using System.Threading;
 using NetowrkServiceType;
 using UnityEngine.EventSystems;
+using System.Text;
 
 public class Chatsystem : MonoBehaviour,IPointerEnterHandler, IPointerExitHandler
 {
+    public static Chatsystem Instance { get; private set; }
     //???? ?????? ???????? ???????? ???? ????
     private NetworkManager networkmanager;
     private NetworkInfo networkinfo;
@@ -22,7 +24,7 @@ public class Chatsystem : MonoBehaviour,IPointerEnterHandler, IPointerExitHandle
     public bool State_Active; //완전 활성화 상태 (사용자가 직접 채팅을 사용 중인 상태)
     public bool State_Inactive; //완전 비활성화 상태 (채팅창이 사용되지 않을 때)
     public bool State_Standby; // 대기 상태 (사용자가 채팅은 치지 않고 있지만 새로운 정보들이 들어가는 상태)
-    bool IsMouseOver;
+    public bool IsMouseOver;
 
     public Transform[] ChildObj;
 
@@ -36,6 +38,13 @@ public class Chatsystem : MonoBehaviour,IPointerEnterHandler, IPointerExitHandle
 
     GameObject ChatContent;
 
+    public string RecvMsg;
+
+
+    private void Awake()
+    {
+        Instance = this;
+    }
 
     // Start is called before the first frame update
     void Start()
@@ -78,13 +87,26 @@ public class Chatsystem : MonoBehaviour,IPointerEnterHandler, IPointerExitHandle
         ChatState();
         InactiveTrigger(5);
         InputFieldTrigger();
-        //Debug.Log(StansdBytime);
-        if (Input.GetKeyDown(KeyCode.Return))
+
+        string data;
+
+        // 큐에서 데이터 가져오기 시도
+        if (NetworkDispatcher.Instance.TryDequeueChatData(out data))
         {
-            ChatReceiveArray("test");
-            //ChatManager.Instance.ChatReceiveArray2(ChildObj);
-            ChatContentSize();
+            // 데이터 처리
+            //OnTcpDataReceived(data);
+            ChatReceiveArray(data);
+
         }
+        //Debug.Log(StansdBytime);
+        //if (RecvMsg != null)
+        //{
+        //    Debug.Log(RecvMsg);
+        //    ChatReceiveArray(RecvMsg);
+        //    RecvMsg = null;
+        //    //ChatManager.Instance.ChatReceiveArray2(ChildObj);
+        //    ChatContentSize();
+        //}
     }
 
 
@@ -182,6 +204,7 @@ public class Chatsystem : MonoBehaviour,IPointerEnterHandler, IPointerExitHandle
         {
             State_Inactive = false;
             ChatActive(190);
+            gameObject.GetComponent<Image>().raycastTarget = true;
             //State_Active = false;
         }
 
@@ -193,6 +216,7 @@ public class Chatsystem : MonoBehaviour,IPointerEnterHandler, IPointerExitHandle
         if (State_Inactive == true)
         {
             ChatInactive(0);
+            gameObject.GetComponent<Image>().raycastTarget = false;
             //State_Inactive = false;
         }
     }
@@ -420,20 +444,39 @@ public class Chatsystem : MonoBehaviour,IPointerEnterHandler, IPointerExitHandle
         chatreceive = Instantiate(ChildObj[0].GetComponentInChildren<TextMeshProUGUI>().gameObject, ChildObj[0].GetComponentInChildren<TextMeshProUGUI>().gameObject.GetComponentsInParent<Transform>()[1]);
         chatreceive.GetComponent<TextMeshProUGUI>().text = receiveMsg;
         receivechatArr.Add(chatreceive);
+        ChatContentSize();
+    }
+
+    public void RecvData()
+    {
+        string data;
+
+        // 큐에서 데이터 가져오기 시도
+        if (NetworkDispatcher.Instance.TryDequeueChatData(out data))
+        {
+            // 데이터 처리
+            //OnTcpDataReceived(data);
+            ChatReceiveArray(data);
+
+        }
+
     }
 
     //채팅 뷰포트 컨텐츠 크기
     void ChatContentSize()
+
     {
         RectTransform ContenteTr = ChatContent.GetComponent<RectTransform>();
-        if ((receivechatArr.Count) * 20 < 111.83)
+        if (((receivechatArr.Count) + 1) * 20 < 119)
         {
             ContenteTr.sizeDelta = new Vector2(ContenteTr.sizeDelta.x, 111.83f);
+            ChildObj[0].GetComponentInChildren<Scrollbar>().value = 0;
         }
         else
         {
-            ContenteTr.sizeDelta = new Vector2(ContenteTr.sizeDelta.x, (receivechatArr.Count) * 20);
-            ChildObj[0].GetComponentInChildren<Scrollbar>().value = 0;
+            Debug.Log(receivechatArr.Count);
+            ContenteTr.sizeDelta = new Vector2(ContenteTr.sizeDelta.x, (((receivechatArr.Count) + 1) * 20));
+            ChildObj[0].GetComponentInChildren<Scrollbar>().value = -0.001f;
         }
     }
 

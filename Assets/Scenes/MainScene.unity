@@ -206,7 +206,7 @@ MonoBehaviour:
   m_TargetGraphic: {fileID: 618512850}
   m_HandleRect: {fileID: 618512849}
   m_Direction: 2
-  m_Value: -0.021406727
+  m_Value: -0.003058104
   m_Size: 0.9999777
   m_NumberOfSteps: 0
   m_OnValueChanged:
@@ -788,13 +788,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: a3056ff4353bd9945ac026b221c9bcd7, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  State_Active: 0
-  State_Inactive: 0
-  State_Standby: 0
-  ChildObj: []
-  ChatInputField: {fileID: 0}
-  receivechatArr:
-  - {fileID: 1678516124}
+  receiveMsg: 
 --- !u!114 &470816535
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -807,6 +801,14 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: d83a9d2c3279e8c4dac1368b3aa393f7, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  ChatInputField: {fileID: 0}
+  State_Active: 0
+  State_Inactive: 0
+  State_Standby: 0
+  IsMouseOver: 0
+  ChildObj: []
+  receivechatArr: []
+  RecvMsg: 
 --- !u!1 &483914632
 GameObject:
   m_ObjectHideFlags: 0
@@ -1175,7 +1177,7 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0, y: 0}
   m_AnchorMax: {x: 1, y: 0}
-  m_AnchoredPosition: {x: 0, y: 111.830055}
+  m_AnchoredPosition: {x: 0, y: 111.83}
   m_SizeDelta: {x: 0, y: 111.83}
   m_Pivot: {x: 0, y: 1}
 --- !u!114 &773165454
@@ -1454,6 +1456,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 5f635621fe6022f4cba57538081d9b2e, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  ChatObj: {fileID: 0}
   speed: 2
 --- !u!212 &1023892432
 SpriteRenderer:

@@ -20,6 +20,7 @@ public class NetworkDispatcher
     private Dictionary<NetowrkServiceType.EServiceType, Action<TransportData>> routingTable;
 
 
+
     public static NetworkDispatcher Instance
     {
         get
@@ -50,13 +51,14 @@ public class NetworkDispatcher
     {
         // 데이터를 이용한 작업 수행
 
-        data.ForEach(transportData =>
-        {
-            //router(transportData);
+        //data.ForEach(transportData =>
+        //{
+        //    //router(transportData);
 
-
-        });
+        //});
         //Debug.Log($"Received data from TCP: {Encoding.UTF8.GetString(data)}");
+
+        //RouteData(data);
     }
 
 
@@ -68,8 +70,11 @@ public class NetworkDispatcher
         if (NetworkBufferManager.Instance.TryDequeueTcpData(out data))
         {
             // 데이터 처리
-            OnTcpDataReceived(data);
+            //OnTcpDataReceived(data);
+            RouteData(data);
+
         }
+
     }
 
     //public void router(TransportData data)
@@ -114,9 +119,12 @@ public class NetworkDispatcher
     // 채팅 데이터를 처리하는 메서드
     private void OnChatReceived(TransportData data)
     {
-
         // 채팅 데이터 처리
         Debug.Log("Received chat data: " + Encoding.UTF8.GetString(data.data));
+        Test test = Test.Parser.ParseFrom(data.data);
+        string recvMsgByServer = Encoding.Default.GetString(test.Msg.ToByteArray());
+        UnityEngine.Debug.Log($"받은 데이터 {test.Msg.ToStringUtf8()}");
+        EnqueueChatData(recvMsgByServer);
     }
 
     // 데이터를 받아 라우팅하는 메서드
@@ -129,4 +137,28 @@ public class NetworkDispatcher
     }
 
 
+    private Queue<string> ChatDataQueue = new Queue<string>();
+
+    private void EnqueueChatData(string data)
+    {
+        lock (ChatDataQueue)
+        {
+            ChatDataQueue.Enqueue(data);
+        }
+    }
+
+    public bool TryDequeueChatData(out string data)
+    {
+        lock (ChatDataQueue)
+        {
+            if (ChatDataQueue.Count > 0)
+            {
+                data = ChatDataQueue.Dequeue();
+                return true;
+            }
+        }
+
+        data = null;
+        return false;
+    }
 }

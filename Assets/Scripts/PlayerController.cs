@@ -27,7 +27,7 @@ public class PlayerController : MonoBehaviour
         //Debug.Log(chatmanager);
         //Debug.Log(chatmanager.ChatInputField);
         //Debug.Log(chatmanager.ChatInputField.isFocused);
-        if (!chatsystem.ChatInputField.isFocused)
+        if (!chatsystem.ChatInputField.isFocused && !chatsystem.State_Active)
         {
             if (Input.GetMouseButton(0))
             {

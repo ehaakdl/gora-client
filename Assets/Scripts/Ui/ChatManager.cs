@@ -5,12 +5,13 @@ using UnityEngine.UI;
 using TMPro;
 using UnityEngine.EventSystems;
 using System;
+using System.Text;
 
 public class ChatManager : MonoBehaviour
 {
     private static readonly Lazy<ChatManager> instance = new Lazy<ChatManager>(() => new ChatManager());
 
-    public string RecvMsg;
+    public string receiveMsg;
 
     public static ChatManager Instance
     {
@@ -20,21 +21,11 @@ public class ChatManager : MonoBehaviour
         }
     }
 
-
-
     // Chat Receive Array
-    public string ChatReceiveArray()
+    public void ChatReceiveArray(GameObject chatreceive,List<GameObject> receivechatArr)
     {
-        return RecvMsg;
-    }
-
-    // Chat Receive Array
-    public void ChatReceiveArray2(Transform[] ChildObj)
-    {
-        GameObject chatreceive;
-        chatreceive = Instantiate(ChildObj[0].GetComponentInChildren<TextMeshProUGUI>().gameObject, ChildObj[0].GetComponentInChildren<TextMeshProUGUI>().gameObject.GetComponentsInParent<Transform>()[1]);
-        //chatreceive.GetComponent<TextMeshProUGUI>().text = receiveMsg;
-        //receivechatArr.Add(chatreceive);
+        chatreceive.GetComponent<TextMeshProUGUI>().text = receiveMsg;
+        receivechatArr.Add(chatreceive);
         Debug.Log(chatreceive.name);
     }
 }
