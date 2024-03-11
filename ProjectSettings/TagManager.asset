@@ -3,16 +3,18 @@
 --- !u!78 &1
 TagManager:
   serializedVersion: 2
-  tags: []
+  tags:
+  - Enemies
+  - MapObj
   layers:
   - Default
   - TransparentFX
   - Ignore Raycast
-  - 
+  - Player
   - Water
   - UI
-  - 
-  - 
+  - MapObj
+  - NPC
   - 
   - 
   - 
@@ -40,4 +42,16 @@ TagManager:
   m_SortingLayers:
   - name: Default
     uniqueID: 0
+    locked: 0
+  - name: MapObjBG
+    uniqueID: 2309746677
+    locked: 0
+  - name: Player
+    uniqueID: 3800095129
+    locked: 0
+  - name: NPC
+    uniqueID: 2917293737
+    locked: 0
+  - name: MapObjFront
+    uniqueID: 4288049341
     locked: 0
