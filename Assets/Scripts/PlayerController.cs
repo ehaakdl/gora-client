@@ -29,11 +29,11 @@ public class PlayerController : MonoBehaviour
         //Debug.Log(chatmanager.ChatInputField.isFocused);
         if (!chatsystem.ChatInputField.isFocused && !chatsystem.State_Active)
         {
-            if (Input.GetMouseButton(0))
-            {
-                _clickPos = _mainCam.ScreenToWorldPoint(Input.mousePosition);
-                _clickPos.z = 0;
-            }
+            //if (Input.GetMouseButton(0))
+            //{
+            //    _clickPos = _mainCam.ScreenToWorldPoint(Input.mousePosition);
+            //    _clickPos.z = 0;
+            //}
             MoveCharacter();
         }
         else
@@ -42,28 +42,45 @@ public class PlayerController : MonoBehaviour
         }
 
     }
+    //void MoveCharacter()
+    //{
+    //    var horizontalInput = Input.GetAxis("Horizontal");
+    //    var verticalInput = Input.GetAxis("Vertical");
+
+    //    if (horizontalInput != 0 || verticalInput != 0)
+    //    {
+    //        _clickPos = transform.position + new Vector3(horizontalInput, verticalInput, 0);
+    //    }
+
+    //    var moveDirection = _clickPos - transform.position;
+    //    var isMove = moveDirection.magnitude > 0f;
+
+    //    animator.SetBool("IsMove", isMove);
+
+    //    if (!isMove) return;
+
+    //    animator.SetFloat("Horizontal", moveDirection.x);
+    //    animator.SetFloat("Vertical", moveDirection.y);
+    //    transform.localScale = new Vector3(moveDirection.x > 0 ? -1 : 1, 1);
+
+    //    moveDirection = moveDirection.normalized;
+
+    //    transform.Translate(moveDirection * speed * Time.deltaTime);
+    //}
     void MoveCharacter()
     {
         var horizontalInput = Input.GetAxis("Horizontal");
         var verticalInput = Input.GetAxis("Vertical");
 
-        if (horizontalInput != 0 || verticalInput != 0)
-        {
-            _clickPos = transform.position + new Vector3(horizontalInput, verticalInput, 0);
-        }
-
-        var moveDirection = _clickPos - transform.position;
-        var isMove = moveDirection.magnitude > 0.1f;
+        var moveDirection = new Vector3(horizontalInput, verticalInput, 0);
+        var isMove = horizontalInput != 0 || verticalInput != 0;
+        moveDirection = moveDirection.normalized;
 
         animator.SetBool("IsMove", isMove);
-        
-        if (!isMove) return;
-
         animator.SetFloat("Horizontal", moveDirection.x);
         animator.SetFloat("Vertical", moveDirection.y);
         transform.localScale = new Vector3(moveDirection.x > 0 ? -1 : 1, 1);
 
-        moveDirection = moveDirection.normalized;
 
         transform.Translate(moveDirection * speed * Time.deltaTime);
     }
