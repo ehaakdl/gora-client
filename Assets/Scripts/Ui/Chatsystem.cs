@@ -138,9 +138,12 @@ public class Chatsystem : MonoBehaviour,IPointerEnterHandler, IPointerExitHandle
     // 마우스가 UI로 올라갈 때 호출
     public void OnPointerEnter(PointerEventData eventData)
     {
-        State_Active = true;
-        State_Standby = false;
-        IsMouseOver = true;
+        if (!State_Inactive)
+        {
+            State_Active = true;
+            State_Standby = false;
+            IsMouseOver = true;
+        }
     }
 
     // 마우스가 UI를 빠져나갈 때 호출
@@ -166,6 +169,7 @@ public class Chatsystem : MonoBehaviour,IPointerEnterHandler, IPointerExitHandle
         //isFocused시 채팅창 활성화 유지
         if (ChatInputField.isFocused)
         {
+
             State_Standby = false;
             State_Active = true;
         }
@@ -414,7 +418,7 @@ public class Chatsystem : MonoBehaviour,IPointerEnterHandler, IPointerExitHandle
         //Debug.Log(ChatType.color.a);
         TextMeshProUGUI ChatTypeTMP = ChildObj[2].GetComponentInChildren<TextMeshProUGUI>();
         Color ChatTypeTMPColor = ChatTypeTMP.color;
-        ChatTypeTMPColor.a = (AlphaVelue + 65) / 255f;
+        ChatTypeTMPColor.a = (AlphaVelue) / 255f;
         ChatTypeTMP.color = ChatTypeTMPColor;
 
         // 채팅창 내 스크롤바

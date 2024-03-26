@@ -6,6 +6,7 @@ using UnityEngine;
 public class PlayerController : MonoBehaviour
 {
     private Animator animator;
+    private SpriteRenderer PlayerSprite;
 
     private Chatsystem chatsystem;
     public GameObject ChatObj;
@@ -19,6 +20,7 @@ public class PlayerController : MonoBehaviour
         ChatObj = GameObject.Find("Chat");
         chatsystem = ChatObj.GetComponent<Chatsystem>();
         _mainCam = Camera.main;
+        PlayerSprite = GetComponent<SpriteRenderer>();
     }
     public float speed = 2;
 
@@ -40,6 +42,11 @@ public class PlayerController : MonoBehaviour
         {
             animator.SetBool("IsMove", false);
         }
+        if (PlayerSprite.sortingLayerName == "Default")
+        {
+            PlayerSprite.sortingOrder = Mathf.RoundToInt(transform.position.y) * -1;
+        }
+        
 
     }
     void MoveCharacter()

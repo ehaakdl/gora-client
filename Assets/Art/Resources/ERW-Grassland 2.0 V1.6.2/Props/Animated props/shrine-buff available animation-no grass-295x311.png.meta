@@ -120,12 +120,12 @@ TextureImporter:
       name: shrine-buff available animation-no grass-295x311_0
       rect:
         serializedVersion: 2
-        x: 0
-        y: 0
-        width: 295
-        height: 311
-      alignment: 0
-      pivot: {x: 0, y: 0}
+        x: 114
+        y: 116
+        width: 60
+        height: 117
+      alignment: 7
+      pivot: {x: 0.5, y: 0}
       border: {x: 0, y: 0, z: 0, w: 0}
       outline: []
       physicsShape: []
@@ -141,12 +141,12 @@ TextureImporter:
       name: shrine-buff available animation-no grass-295x311_1
       rect:
         serializedVersion: 2
-        x: 295
-        y: 0
-        width: 295
-        height: 311
-      alignment: 0
-      pivot: {x: 0, y: 0}
+        x: 409
+        y: 116
+        width: 60
+        height: 117
+      alignment: 7
+      pivot: {x: 0.5, y: 0}
       border: {x: 0, y: 0, z: 0, w: 0}
       outline: []
       physicsShape: []
@@ -162,12 +162,12 @@ TextureImporter:
       name: shrine-buff available animation-no grass-295x311_2
       rect:
         serializedVersion: 2
-        x: 590
-        y: 0
-        width: 295
-        height: 311
-      alignment: 0
-      pivot: {x: 0, y: 0}
+        x: 704
+        y: 116
+        width: 60
+        height: 117
+      alignment: 7
+      pivot: {x: 0.5, y: 0}
       border: {x: 0, y: 0, z: 0, w: 0}
       outline: []
       physicsShape: []
@@ -183,12 +183,12 @@ TextureImporter:
       name: shrine-buff available animation-no grass-295x311_3
       rect:
         serializedVersion: 2
-        x: 885
-        y: 0
-        width: 295
-        height: 311
-      alignment: 0
-      pivot: {x: 0, y: 0}
+        x: 999
+        y: 116
+        width: 60
+        height: 117
+      alignment: 7
+      pivot: {x: 0.5, y: 0}
       border: {x: 0, y: 0, z: 0, w: 0}
       outline: []
       physicsShape: []
@@ -204,12 +204,12 @@ TextureImporter:
       name: shrine-buff available animation-no grass-295x311_4
       rect:
         serializedVersion: 2
-        x: 1180
-        y: 0
-        width: 295
-        height: 311
-      alignment: 0
-      pivot: {x: 0, y: 0}
+        x: 1294
+        y: 116
+        width: 60
+        height: 117
+      alignment: 7
+      pivot: {x: 0.5, y: 0}
       border: {x: 0, y: 0, z: 0, w: 0}
       outline: []
       physicsShape: []
@@ -225,12 +225,12 @@ TextureImporter:
       name: shrine-buff available animation-no grass-295x311_5
       rect:
         serializedVersion: 2
-        x: 1475
-        y: 0
-        width: 295
-        height: 311
-      alignment: 0
-      pivot: {x: 0, y: 0}
+        x: 1589
+        y: 116
+        width: 60
+        height: 117
+      alignment: 7
+      pivot: {x: 0.5, y: 0}
       border: {x: 0, y: 0, z: 0, w: 0}
       outline: []
       physicsShape: []
@@ -246,12 +246,12 @@ TextureImporter:
       name: shrine-buff available animation-no grass-295x311_6
       rect:
         serializedVersion: 2
-        x: 1770
-        y: 0
-        width: 295
-        height: 311
-      alignment: 0
-      pivot: {x: 0, y: 0}
+        x: 1884
+        y: 116
+        width: 60
+        height: 117
+      alignment: 7
+      pivot: {x: 0.5, y: 0}
       border: {x: 0, y: 0, z: 0, w: 0}
       outline: []
       physicsShape: []
@@ -267,12 +267,12 @@ TextureImporter:
       name: shrine-buff available animation-no grass-295x311_7
       rect:
         serializedVersion: 2
-        x: 2065
-        y: 0
-        width: 295
-        height: 311
-      alignment: 0
-      pivot: {x: 0, y: 0}
+        x: 2179
+        y: 116
+        width: 60
+        height: 117
+      alignment: 7
+      pivot: {x: 0.5, y: 0}
       border: {x: 0, y: 0, z: 0, w: 0}
       outline: []
       physicsShape: []
@@ -288,12 +288,12 @@ TextureImporter:
       name: shrine-buff available animation-no grass-295x311_8
       rect:
         serializedVersion: 2
-        x: 2360
-        y: 0
-        width: 295
-        height: 311
-      alignment: 0
-      pivot: {x: 0, y: 0}
+        x: 2474
+        y: 116
+        width: 60
+        height: 117
+      alignment: 7
+      pivot: {x: 0.5, y: 0}
       border: {x: 0, y: 0, z: 0, w: 0}
       outline: []
       physicsShape: []
@@ -309,12 +309,12 @@ TextureImporter:
       name: shrine-buff available animation-no grass-295x311_9
       rect:
         serializedVersion: 2
-        x: 2655
-        y: 0
-        width: 295
-        height: 311
-      alignment: 0
-      pivot: {x: 0, y: 0}
+        x: 2769
+        y: 116
+        width: 60
+        height: 117
+      alignment: 7
+      pivot: {x: 0.5, y: 0}
       border: {x: 0, y: 0, z: 0, w: 0}
       outline: []
       physicsShape: []
@@ -330,12 +330,12 @@ TextureImporter:
       name: shrine-buff available animation-no grass-295x311_10
       rect:
         serializedVersion: 2
-        x: 2950
-        y: 0
-        width: 295
-        height: 311
-      alignment: 0
-      pivot: {x: 0, y: 0}
+        x: 3064
+        y: 116
+        width: 60
+        height: 117
+      alignment: 7
+      pivot: {x: 0.5, y: 0}
       border: {x: 0, y: 0, z: 0, w: 0}
       outline: []
       physicsShape: []
